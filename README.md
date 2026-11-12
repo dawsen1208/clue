@@ -8,7 +8,7 @@ Pages address after successful deployment: https://dawsen1208.github.io/greengo-
 
 ## Try it
 
-Serve `dist/`, or run `npm start` and open http://127.0.0.1:8788. Chinese: `index.html`; English: `en.html`. No dependencies, secrets, transport API or build step are required.
+Serve `dist/`, or run `npm start` and open http://127.0.0.1:8788. English (default): `index.html` or `en.html`; Chinese: `zh.html`. No dependencies, secrets, transport API or build step are required.
 
 Find a classroom or nearby listed toilet → check building, floor and evidence → use building–floor–place guidance. Save favourite place IDs in this browser. Download issue notes locally.
 
