@@ -1,4 +1,4 @@
-name: Check and deploy Campus Find
+name: Check and deploy Clue
 on:
   push:
     branches: [main]
