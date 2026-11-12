@@ -39,3 +39,8 @@ The approach prompt is a timed frontend scenario while guidance is active, with 
 See `docs/01-direction-change.md`, `docs/02-user-study-plan.md`, `docs/03-data-validation.md`, `docs/04-implementation-log.md` and `docs/06-group-direction-record.md`. These distinguish group decisions, design assumptions, sourced facts and research still to carry out. No interview results or participant findings have been fabricated.
 
 Preserved original: https://dawsen1208.github.io/greengo-uob-commute/
+
+## Unified casebook update
+
+All screens now share the paper-file, corkboard, pin and thread system. The opening unfolds the campus map, lands pins and clue cards, traces a thread and reveals the wordmark. It is skippable, replayable from Prototype notes, and bypassed for reduced motion. See docs/09-unified-casebook-and-motion.md.
+
