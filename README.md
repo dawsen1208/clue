@@ -44,3 +44,8 @@ Preserved original: https://dawsen1208.github.io/greengo-uob-commute/
 
 All screens now share the paper-file, corkboard, pin and thread system. The opening unfolds the campus map, lands pins and clue cards, traces a thread and reveals the wordmark. It is skippable, replayable from Prototype notes, and bypassed for reduced motion. See docs/09-unified-casebook-and-motion.md.
 
+
+## Trending clues map workspace
+
+The map, shared search, time-window Top 10 and place/guidance panels now form one workspace. Popularity uses clearly labelled fictional counts for Last 7 days / Last 30 days; no student queries are collected. Map pins open a destination or a choice of destinations in the building, followed by Go here (demo). See docs/10-trending-clues-map-workspace.md.
+
