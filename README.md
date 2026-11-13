@@ -49,3 +49,7 @@ All screens now share the paper-file, corkboard, pin and thread system. The open
 
 The map, shared search, time-window Top 10 and place/guidance panels now form one workspace. Popularity uses clearly labelled fictional counts for Last 7 days / Last 30 days; no student queries are collected. Map pins open a destination or a choice of destinations in the building, followed by Go here (demo). See docs/10-trending-clues-map-workspace.md.
 
+
+## Map and clue extensions · 2026-11-13
+
+Version 0.5.0 keeps the campus map beside the clue file on desktop and above it on mobile. Selecting a building draws a red relationship string into the external clue file; indoor guidance adds a floor clue without hiding the campus map. See `docs/11-map-and-branch-clues.md` for the feedback, alternatives, motion and verification record. This supersedes the overlay/full-map interaction in version 0.4.0.
