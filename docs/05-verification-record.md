@@ -24,4 +24,4 @@ The original `dist/index.html`, `dist/en.html` and `dist/context.js` match the c
 
 ## Repository publication
 
-The user created the new public repository, https://github.com/dawsen1208/greengo-uob-campus-find, and its visibility and write access were verified through the GitHub connector. The user also confirmed Pages Source = GitHub Actions. The initial publication includes code, the public seed directory, tests and design records; private exports, location records, timetable snapshots and secrets are excluded. A successful workflow and deployed page must be verified before reporting the site as live.
+The user created the new public repository, https://github.com/dawsen1208/clue (originally named greengo-uob-campus-find), and its visibility and write access were verified through the GitHub connector. The user also confirmed Pages Source = GitHub Actions. The initial publication includes code, the public seed directory, tests and design records; private exports, location records, timetable snapshots and secrets are excluded. A successful workflow and deployed page must be verified before reporting the site as live.

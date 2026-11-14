@@ -17,7 +17,7 @@ This does not mean those services have been implemented or that fictional conten
 - **循着线索，找到去处。**
 - Supporting line: **A little curiosity. A little less wandering. / 留一点好奇，少一点绕路。**
 
-GreenGo names remain in historical documents and existing repository URLs to preserve design history and working links. The current interface uses Clue. No trademark or name-availability clearance is claimed.
+GreenGo names remain in historical documents to preserve design history. The current repository is https://github.com/dawsen1208/clue and the prototype is https://dawsen1208.github.io/clue/. The earlier commute project remains separate. The current interface uses Clue. No trademark or name-availability clearance is claimed.
 
 ## Visual approach / 视觉方向
 
