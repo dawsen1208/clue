@@ -53,3 +53,7 @@ The map, shared search, time-window Top 10 and place/guidance panels now form on
 ## Map and clue extensions · 2026-11-13
 
 Version 0.5.0 keeps the campus map beside the clue file on desktop and above it on mobile. Selecting a building draws a red relationship string into the external clue file; indoor guidance adds a floor clue without hiding the campus map. See `docs/11-map-and-branch-clues.md` for the feedback, alternatives, motion and verification record. This supersedes the overlay/full-map interaction in version 0.4.0.
+
+## Campus-to-door journey · 2026-11-14
+
+Version 0.6.0 extends the concept flow to Locate → Building → Floor → Inside → Confirm. It adds scenario entrance/direction-sign checkpoints, explicit user confirmation, previous-step controls and not-found/cannot-use recovery, including alternative toilets. See `docs/12-campus-to-door-journey.md`. Positioning and indoor paths remain assumptions, not verified services. Source mode stays source-only. Fifteen automated tests pass.
