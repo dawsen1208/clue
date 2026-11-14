@@ -37,3 +37,7 @@ This is a user-experience prototype under the assumption of complete location an
 Task A: From a chosen campus reference point, find a named classroom; explain which sign would be checked at each handover. Task B: Find a toilet with the needed facilities, then handle a missing sign or unusable facility. Observe wrong turns in the interface, requests for help, backtracking and whether users understand simulation labels. Ask whether each confirmation helps orientation or creates unnecessary effort. Compare text landmarks with the floor sketch before committing to greater indoor detail.
 
 Tools: Codex assisted with bilingual interaction design, implementation, state guards, tests and documentation; the in-app browser checked the scenarios; the existing GitHub Actions workflow publishes the prototype. User research is still required to validate the design.
+
+### 2026-11-14 map crop
+
+The campus artwork is clipped to its right-hand geographic portion (original artwork coordinates x=786, y=47, width=946, height=1037). Printed building lists, the left key and bottom-right cultural-attractions legend are excluded. Default overview, destination focus, reset, pan limits and zoom limits share the cropped bounds. Building pins keep the original artwork coordinate system; source attribution remains on the Prototype notes page.
