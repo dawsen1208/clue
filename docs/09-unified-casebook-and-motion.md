@@ -37,3 +37,7 @@ The sequence lasts approximately 3.2 seconds, can be skipped immediately, and ru
 Does the shared metaphor make page transitions clearer? Is the extra animation acceptable? Are file codes, stage threads and completion feedback helpful rather than distracting? Can people find a room or toilet without needing to understand detective terminology? Preserve these as open questions until evaluated.
 
 Tools: Codex assisted with the visual implementation, bilingual labels, animation and documentation. School-map artwork is retained from the supplied material; decorative paper, pins and threads are drawn in CSS/SVG, without copying reference-image watermarks.
+
+## 2026-11-15 · Opening map crop alignment
+
+The opening scene now reads the crop rectangle from the interactive campus artwork and applies the same clipping region. The printed legends are excluded even where the opening's wide paper leaves margins around the portrait map. Unfolding, pins, threads, skip/replay and reduced-motion behaviour remain. Browser replay confirmed both crop regions are x=786, y=47, width=946, height=1037. The Prototype notes replay control also remains available after accepting the scope briefing.
