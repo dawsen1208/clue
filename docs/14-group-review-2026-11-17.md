@@ -56,3 +56,7 @@ Tools: Codex assisted with documentation, frontend changes and checks; the in-ap
 - 中文推荐标题与导航已核对；所检查交互未观察到浏览器应用错误。检查不代表所有浏览器／设备均已验证，也不代表真实用户评测。
 
 These checks exercise implementation behaviour; participant-based evaluation remains outstanding.
+
+## 2026-11-17 · Map overview interaction correction
+
+Follow-up feedback: Map overview appeared unresponsive; the intended behaviour was to pull the Recommended sheet down and reveal the whole map. The button now collapses the sheet to a 44px reopen handle, compacts the floating toolbar, restores the campus map and reserves map space above the handle. Click/drag the handle or use Recommended/Trending to reopen the panel without discarding the current task. Desktop expands the map and moves the collapsed-panel handle below it. The change replaces the previous reset-only behaviour. Mobile browser check: sheet height 44px, clue content hidden, full crop visible; reopening restores the recommendation list.

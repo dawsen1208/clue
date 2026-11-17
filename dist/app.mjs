@@ -1,5 +1,5 @@
 import {progressKey,trailDraft,readDraft} from './progress.mjs?v=meeting-9';
-import {setupExperience,refreshExperience,enhanceIndoor,floorChoice,focusGuide,setSheet} from './experience.mjs?v=meeting-9';
+import {setupExperience,refreshExperience,enhanceIndoor,floorChoice,focusGuide,setSheet} from './experience.mjs?v=map-10';
 import {journeyMarkup,journeyNext,journeySteps} from './journey.mjs?v=meeting-9';
 import {buildings,places,sources,checked} from './data.mjs';
 import {findPlaces,floorName,distance,mapToGeo,geoToMap,inCampus} from './core.mjs';
