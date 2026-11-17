@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {trailDraft,readDraft} from '../dist/progress.mjs';
+const now=1000000000,state={guide:{id:'arts127'},stage:3,mode:'concept',origin:{lat:52.45045,lon:-1.931,name:'Green Heart',zh:'Green Heart'},stepFree:true,reminders:false,muted:true,recovery:true,timer:123,feedback:[{text:'private note'}]};
+test('draft resumes the exact checkpoint and preferences without persisting timers or feedback',()=>{const draft=trailDraft(state,now),resumed=readDraft(JSON.stringify(draft),['arts127'],now);assert.equal(resumed.stage,3);assert.equal(resumed.stepFree,true);assert.equal(resumed.reminders,false);assert.equal(resumed.recovery,true);assert.equal('timer' in resumed,false);assert.equal('feedback' in resumed,false);});
+test('unrecognised places, corrupt data, expired drafts and impossible stages do not resume',()=>{const d=trailDraft(state,now);for(const raw of ['broken',JSON.stringify({...d,placeId:'unknown'}),JSON.stringify({...d,stage:8}),JSON.stringify({...d,mode:'evidence',stage:4}),JSON.stringify({...d,savedAt:now-8*86400000}),JSON.stringify({...d,origin:{...d.origin,lat:0}})])assert.equal(readDraft(raw,['arts127'],now),null);});
+test('leaving the guide does not generate an empty draft that overwrites a recoverable journey',()=>{assert.equal(trailDraft({...state,guide:null},now),null);});

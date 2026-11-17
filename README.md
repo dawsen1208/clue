@@ -114,3 +114,7 @@ The [earlier commute prototype](https://dawsen1208.github.io/greengo-uob-commute
 设计以“线索”串联不同空间尺度：建筑图钉通过红线延伸到地点档案；校园地图持续保留；室内示意图补充楼层、走廊和门口线索；最后由使用者确认是否找到。未找到时可返回核对或寻找其他厕所。
 
 当前是用于用户研究和设计测试的中英文交互原型，定位、室内路径及设施状态等仍为明确标注的假设。详见[中英双版项目概览](docs/13-clue-project-overview.md)。
+
+## Group review update · 2026-11-17
+
+Version 0.7.0 adds browser-local trail drafts (Continue/Clear, seven-day recovery), partial guidance updates that retain the campus canvas, icon/checkpoint guidance, a persistent Recommended/Feedback navigation, illustrative 3D/2D floor switching and a three-height draggable mobile clue sheet over the map. Drafts are not synced or uploaded. 3D layers are not surveyed building models. See [the meeting feedback and design decisions](docs/14-group-review-2026-11-17.md). Group feedback is recorded separately from participant research evidence.
