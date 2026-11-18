@@ -125,3 +125,10 @@ Version 0.7.0 adds browser-local trail drafts (Continue/Clear, seven-day recover
 Version 0.8.0 adds individual saved-clue deletion with Undo, plus Feedback & replies with browser-local notes, Pending / In review / Replied progress, linked-place details and clearly labelled simulated replies. New notes stay pending until an explicit demo action. A sample reply can be previewed independently. See [design decisions, scope and checks](docs/15-saved-clues-and-feedback-2026-11-18.md).
 
 新增收藏删除与撤销；反馈与回信档案支持查看本地反馈原文、关联地点、处理状态及演示回信。没有真实后台处理或学校消息发送。
+
+
+## Visual wayfinding update · 2026-11-18
+
+Version 0.9.0 replaces the default concept journey's written checkpoint lists with origin/building diagrams, a highlighted floor stack, corridor arrows, door-sign matching and visual recovery controls. Short action labels remain; detailed help is collapsible. The mobile sheet focuses each checkpoint and lowers for a larger indoor sketch. See [visual design decisions and validation](docs/16-visual-wayfinding-2026-11-18.md). All diagrams remain explicitly illustrative.
+
+找教室流程改为图形优先：起点 → 建筑 → 楼层 → 门牌 → 确认。保留简短操作、可展开说明、演示标识、无障碍描述与未找到时的恢复入口。
