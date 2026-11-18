@@ -65,7 +65,7 @@ The five-stage guidance is **Locate → Building → Floor → Inside → Confir
 
 Source-linked information is not field verification. Unknown source floors remain unknown; room codes do not automatically determine floors. Proximity uses approximate building-centre distances, not verified walking routes, and cannot guarantee the nearest usable toilet. The lift preference does not establish an accessible route.
 
-No school authentication, live GPS, indoor positioning, occupancy feed, background tracking or university messaging service is connected. Bookmarks store place IDs in this browser; feedback stays in page memory. No personal timetable, precise location or credentials are published.
+No school authentication, live GPS, indoor positioning, occupancy feed, background tracking or university messaging service is connected. Bookmarks store place IDs in this browser; feedback and simulated replies persist in this browser. No real feedback recipient is connected. No personal timetable, precise location or credentials are published.
 
 ## Local preview
 
@@ -118,3 +118,10 @@ The [earlier commute prototype](https://dawsen1208.github.io/greengo-uob-commute
 ## Group review update · 2026-11-17
 
 Version 0.7.0 adds browser-local trail drafts (Continue/Clear, seven-day recovery), partial guidance updates that retain the campus canvas, icon/checkpoint guidance, a persistent Recommended/Feedback navigation, illustrative 3D/2D floor switching and a three-height draggable mobile clue sheet over the map. Drafts are not synced or uploaded. 3D layers are not surveyed building models. See [the meeting feedback and design decisions](docs/14-group-review-2026-11-17.md). Group feedback is recorded separately from participant research evidence.
+
+
+## Saved clues and feedback update · 2026-11-18
+
+Version 0.8.0 adds individual saved-clue deletion with Undo, plus Feedback & replies with browser-local notes, Pending / In review / Replied progress, linked-place details and clearly labelled simulated replies. New notes stay pending until an explicit demo action. A sample reply can be previewed independently. See [design decisions, scope and checks](docs/15-saved-clues-and-feedback-2026-11-18.md).
+
+新增收藏删除与撤销；反馈与回信档案支持查看本地反馈原文、关联地点、处理状态及演示回信。没有真实后台处理或学校消息发送。
