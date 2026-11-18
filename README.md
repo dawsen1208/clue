@@ -132,3 +132,10 @@ Version 0.8.0 adds individual saved-clue deletion with Undo, plus Feedback & rep
 Version 0.9.0 replaces the default concept journey's written checkpoint lists with origin/building diagrams, a highlighted floor stack, corridor arrows, door-sign matching and visual recovery controls. Short action labels remain; detailed help is collapsible. The mobile sheet focuses each checkpoint and lowers for a larger indoor sketch. See [visual design decisions and validation](docs/16-visual-wayfinding-2026-11-18.md). All diagrams remain explicitly illustrative.
 
 找教室流程改为图形优先：起点 → 建筑 → 楼层 → 门牌 → 确认。保留简短操作、可展开说明、演示标识、无障碍描述与未找到时的恢复入口。
+
+
+## Optional voice update · 2026-11-18
+
+Version 0.10.0 adds an opt-in Voice guide to the graphical journey, using the earlier detailed written instructions. Voice defaults off on each page load and offers Replay and Stop. Step changes replace old speech; leaving the guide or hiding the page stops it. English/Chinese speech uses available browser/device voices, with a visible fallback when unavailable. See [voice behaviour and verification limits](docs/17-optional-voice-guide-2026-11-18.md).
+
+新增默认关闭的语音指引，沿用此前详细文字，支持重播与停止。图形页面保持不变；“更多提示”可查看播报全文。音色与可用性依赖浏览器和设备。
