@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 concurrency:
@@ -34,5 +35,18 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+      - name: Wait for GitHub Pages artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACTS_ENDPOINT: repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts
+        run: |
+          for attempt in {1..8}; do
+            if gh api "$ARTIFACTS_ENDPOINT" --jq '.artifacts[] | select(.name == "github-pages" and .expired == false) | .id' | grep -q .; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::The uploaded GitHub Pages artifact did not become available."
+          exit 1
       - uses: actions/deploy-pages@v4
         id: deployment
