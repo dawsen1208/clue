@@ -11,7 +11,7 @@ import {popularPlaces,isPopularContext} from './popular.mjs';
 import {setupExplorer,refreshExplorer,showExplorerList,traceSelection,tweenMap,stopMapTween,animateMapStage} from './explorer.mjs?v=start-first';
 import {originPoints,initialGuideStage,walkingRoute,accessMatch,closestToilet} from './campus-routing.mjs?v=start-first';
 import {floorChoices,locateRouteMap} from './map-first.mjs?v=locate-map';
-import {buildingPhotos} from './building-photos.mjs?v=20261124';
+import {buildingPhotos} from './building-photos.mjs?v=20261124-2';
 import {guestAccount,saveGuest} from './guest-account.mjs';
 const en=document.documentElement.lang==='en',t=(zh,eng)=>en?eng:zh,$=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),name=p=>en?p.name:p.zh;
 const paths={search:'<circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/>',room:'<path d="M5 21V3h14v18M3 21h18M9 7h6m-6 4h6m0 5h.1"/>',toilet:'<circle cx="8" cy="4" r="1.5"/><circle cx="17" cy="4" r="1.5"/><path d="M5 9h6l1 6H4l1-6Zm1 6v6m4-6v6m5-12h4v7h-4V9Zm1 7v5m2-5v5"/>',pin:'<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',bookmark:'<path d="M6 3h12v19l-6-4-6 4V3Z"/>',arrow:'<path d="M4 12h15m-6-6 6 6-6 6"/>',check:'<path d="m5 12 5 5L20 6"/>',close:'<path d="m6 6 12 12M18 6 6 18"/>',locate:'<circle cx="12" cy="12" r="6"/><path d="M12 1v5m0 12v5M1 12h5m12 0h5"/>',bell:'<path d="M6 9a6 6 0 0 1 12 0v6l2 3H4l2-3V9Zm4 12h4"/>',steps:'<path d="M3 20h5v-5h5v-5h5V5h4"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-11v1"/>'};
