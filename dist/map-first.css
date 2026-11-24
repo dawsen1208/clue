@@ -44,6 +44,17 @@ body.meeting-layout{font-family:system-ui,"Segoe UI",sans-serif;color:var(--rout
 .route-extra{margin:12px 0;font-size:.9rem}
 .route-extra summary{cursor:pointer}
 .building-photo{margin:10px 0 15px}.building-photo img{width:100%;max-height:250px;object-fit:contain;background:#eee3c9}
+.photo-gallery{border:1px solid #b9a781;border-radius:6px;overflow:hidden;background:#f9efd8}
+.photo-stage{position:relative;display:grid;place-items:center;background:#e7ddc6;min-height:135px}
+.photo-gallery img{display:block;max-height:250px;width:100%;height:auto;object-fit:contain}
+.photo-gallery figcaption{padding:7px 10px;display:flex;flex-wrap:wrap;align-items:center;gap:5px 10px;color:#3c483a}
+.photo-label{font:700 .75rem system-ui,sans-serif;color:#763728}
+.photo-caption{font-size:.83rem}
+.photo-angles{display:flex;gap:6px;flex-wrap:wrap;flex-basis:100%}
+.photo-angles button{min-height:36px;padding:3px 9px;border:1px solid #a89268;border-radius:4px;background:#f8edcf;color:#35463b;font-size:.8rem}
+.photo-angles button[aria-pressed=true]{background:#30483c;color:#fff7e3;border-color:#30483c}
+.photo-status{position:absolute;background:#fff3d9;margin:0;padding:7px 10px}
+@media(max-width:800px){#buildingListPreview{min-height:45px}.photo-gallery img{max-height:175px}}
 .photo-missing{padding:16px;background:#eee3c9;display:flex;align-items:center;gap:12px}.photo-missing small{display:block;margin-top:4px}.building-photo figcaption a{font-size:.9rem}
 .profile-page{max-width:52rem;margin-inline:auto;min-height:70vh}.profile-page #profileForm{display:grid;gap:12px;max-width:28rem}.profile-page input{display:block;width:100%;padding:10px;border:1px solid #a99b7e}.profile-welcome{display:flex;align-items:center;gap:15px}.profile-routes li{padding:7px 0}.profile-routes small{display:block;color:#62563d}
 #notesDialog{width:min(880px,94vw);max-height:88dvh;overflow:auto}#notesDialog .about-page{padding:12px 0}
