@@ -41,6 +41,14 @@ body.meeting-layout{font-family:system-ui,"Segoe UI",sans-serif;color:var(--rout
 .route-floor-plan text{font:600 12px system-ui,sans-serif;fill:#2e4137}
 .plan-shell{fill:#e3d1aa;stroke:#807653;stroke-width:2}.plan-rooms rect{fill:#f6e7cb;stroke:#978662}.plan-corridor{stroke:#fff8e5;stroke-width:17}.plan-thread{stroke:#a22e20;stroke-width:4}.plan-origin{fill:#1e6580}.plan-target{fill:#a22e20}
 .access-summary{display:grid;gap:4px;margin:8px 0 12px;font-size:.88rem;color:#334638}
+.detail-route-origin{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.25rem 1rem;color:#253d35}
+.detail-route-origin button{min-height:44px}
+.detail-route-options{display:flex;flex-wrap:wrap;gap:.25rem 1rem;margin:.25rem 0 .4rem;padding:.25rem .75rem .4rem;border:1px solid #ac9875;color:#253d35}
+.detail-route-options legend{padding:0 .3rem;font-weight:700}
+.detail-route-options label{display:flex;align-items:center;gap:.4rem;min-height:44px;cursor:pointer}
+.detail-route-options input{width:1.1rem;height:1.1rem;margin:0;accent-color:#304a36}
+.route-unavailable{font-size:.9rem;color:#802d22;font-weight:600}
+#startGuide:disabled{opacity:.55;cursor:not-allowed}
 .route-extra{margin:12px 0;font-size:.9rem}
 .route-extra summary{cursor:pointer}
 .building-photo{margin:10px 0 15px}.building-photo img{width:100%;max-height:250px;object-fit:contain;background:#eee3c9}

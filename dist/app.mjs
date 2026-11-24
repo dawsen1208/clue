@@ -41,6 +41,17 @@ function accessSummary(p){
  const yes=demo()&&state.stepFree&&accessMatch(p,state.origin);
  return `<div class="access-summary"><span>${yes?t('台阶：演示路线不经过台阶','Steps: none in the demo route'):t('有无台阶：待核实','Steps: unverified')}</span><span>${yes?(p.floor==='G'?t('电梯：演示中同层，无需搭乘','Lift: not needed on this demo level'):t('电梯：演示中可达目标楼层','Lift: serves the target floor in this demo')):t('电梯能否到目标层：待核实','Lift to destination floor: unverified')}</span>${yes?`<small>${t('演示筛选 · 实地通行待核实','Demo filter · real accessibility unverified')}</small>`:''}</div>`;
 }
+function routeOptions(p){
+ if(!demo()||!state.origin)return accessSummary(p);
+ const blocked=!allowed(p);
+ return `<div class="detail-route-origin"><span>${t('出发点','Start')}: <strong>${esc(name(state.origin))}</strong></span><button type="button" id="changeDetailOrigin" class="text-button">${t('更换起点','Change start')}</button></div>
+ <fieldset class="detail-route-options" aria-describedby="detailRouteStatus">
+  <legend>${t('路线选项','Route options')}</legend>
+  <label><input type="radio" name="detailRoute" value="standard" ${state.stepFree?'':'checked'}>${t('普通路线','Standard route')}</label>
+  <label><input type="radio" name="detailRoute" value="step-free" ${state.stepFree?'checked':''}>${t('无台阶路线（演示）','Step-free route (demo)')}</label>
+ </fieldset>
+ <div id="detailRouteStatus">${blocked?`<p class="route-unavailable">${t('这组起点和目的地暂无无台阶演示路线。可更换起点或目的地，或切回普通路线。','No step-free demo route for this start and destination. Change the start or destination, or switch to the standard route.')}</p>`:''}${accessSummary(p)}</div>`;
+}
 function startJourney(p){
  if(!state.origin){state.pendingPlace=p.id;openOrigin();return;}
  if(!allowed(p)){toast(t('此起点没有符合条件的演示无台阶路线。','No matching step-free demo route from this origin.'));return;}
@@ -150,11 +161,19 @@ function saveButton(p){return `<button id="savePlace" class="save-button ${saved
 function sourceInfo(p){if(p.sample)return '<p class="sample-place-note">'+esc(p.note[en?1:0])+'</p>';const original=places.find(x=>x.id===p.id)||p;return `<details class="source-details"><summary>${t('查看真实资料与演示假设','Real sources & scenario assumptions')}</summary><p>${demo()?t('当前为设计演示。部分楼层、设施状态、路径与耗时采用假设数据，不用于真实找路。','This is a design demonstration. Some floors, availability, paths and times are assumed, not real navigation.'):t('当前为资料查看模式，不补充未知楼层。','Source view does not fill in unknown floors.')}</p><p>${t('原始目录楼层：','Original directory floor: ')}${esc(floorName(original.floor,en))}</p>${original.source?`<a href="${sources[original.source].url}" target="_blank" rel="noopener">${sources[original.source].name} ↗</a><p>${t('查阅日期','Consulted')} ${checked} · ${t('公开来源不等于现场复核。','A public source is not a field check.')}</p>`:`<p>${t('原始房间标签来自前期原型，尚需核验。','The original room label comes from the previous prototype and needs verification.')}</p>`}</details>`;}
 function renderDetail(){
  const p=state.selected,b=bOf(p);
- $('#detailPane').innerHTML=`<div class="detail-toolbar"><button id="backToList" class="text-button">← ${t('返回线索','Back to clues')}</button>${saveButton(p)}</div><h2 class="place-title">${esc(name(p))}</h2><p class="building-line">${esc(b.id+' · '+name(b))} · ${esc(floor(p))}</p>${accessSummary(p)}<button id="startGuide" class="primary full">${state.origin?t('开始导航','Start directions'):t('先选起点','Choose starting point')} ${icon('arrow')}</button><div id="buildingPreview"></div>${demo()?`<details class="route-extra"><summary>${t('提醒与演示设置','Prompt and demo settings')}</summary><label><input id="reminderChoice" type="checkbox" ${state.reminders?'checked':''}> ${t('到楼提醒（演示）','Approach prompt (demo)')}</label></details>`:''}${sourceInfo(p)}`;
+ $('#detailPane').innerHTML=`<div class="detail-toolbar"><button id="backToList" class="text-button">← ${t('返回线索','Back to clues')}</button>${saveButton(p)}</div><h2 class="place-title">${esc(name(p))}</h2><p class="building-line">${esc(b.id+' · '+name(b))} · ${esc(floor(p))}</p>${routeOptions(p)}<button id="startGuide" class="primary full" ${!state.origin||allowed(p)?'':'disabled aria-describedby="detailRouteStatus"'}>${state.origin?t('开始导航','Start directions'):t('先选起点','Choose starting point')} ${icon('arrow')}</button><div id="buildingPreview"></div>${demo()?`<details class="route-extra"><summary>${t('提醒与演示设置','Prompt and demo settings')}</summary><label><input id="reminderChoice" type="checkbox" ${state.reminders?'checked':''}> ${t('到楼提醒（演示）','Approach prompt (demo)')}</label></details>`:''}${sourceInfo(p)}`;
  $('#backToList').onclick=()=>{const building=state.building;state.selected=null;if(building&&state.origin){showBuilding(building);return;}resetExplorer();};
  $('#savePlace').onclick=()=>{if(saved.includes(p.id)){removeSaved(p.id);return;}saved.push(p.id);persistSaved();render();};
  $('#reminderChoice')?.addEventListener('change',e=>state.reminders=e.target.checked);
  $('#startGuide').onclick=()=>startJourney(p);
+ $('#changeDetailOrigin')?.addEventListener('click',openOrigin);
+ $('#detailPane').querySelectorAll('input[name="detailRoute"]').forEach(input=>{
+  input.onchange=()=>{
+   state.stepFree=input.value==='step-free';
+   render();
+   $('#detailPane input[name="detailRoute"]:checked')?.focus({preventScroll:true});
+  };
+ });
  if(demo())fillBuildingPreview(b,p);
 }
 function fillBuildingPreview(building,p=null){
