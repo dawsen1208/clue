@@ -1,6 +1,6 @@
 import {floorPlan,levelsFor} from './map-first.mjs?v=map-first-1';
 const $=s=>document.querySelector(s),reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
-let layerMode='3d',layerPlace=null,selectedFloor=null,sheetIndex=1,english=false,lastGuideStage=null,lastSheetStage=null;
+let sheetIndex=1,english=false,lastSheetStage=null;
 const sheetStops=[22,44,74];
 export function setSheet(index){document.body.classList.remove('map-overview');$('#exploreMap')?.setAttribute('aria-pressed','false');const label=$('#sheetHandle small');if(label)label.textContent=english?'CLUE SHEET · DRAG OR TAP':'线索面板 · 拖动或点击';sheetIndex=Math.max(0,Math.min(2,index));document.documentElement.style.setProperty('--clue-sheet',sheetStops[sheetIndex]+'dvh');const h=$('#sheetHandle');if(h){h.setAttribute('aria-expanded',String(sheetIndex===2));h.setAttribute('aria-valuenow',String(sheetIndex+1));}}
 export function setupExperience({en,onResume,onDiscard,onFeedback}){
@@ -16,18 +16,59 @@ export function setupExperience({en,onResume,onDiscard,onFeedback}){
 }
 export function refreshExperience({en,draft,place,guide,stage}){
  const t=(zh,eng)=>en?eng:zh;if($('#boardPage').hidden||$('.case-workspace').dataset.explorerView==='saved')setSheet(1);$('#resumeTrail').hidden=!draft||!!guide;const text=$('#resumeTrailText');if(draft)text.textContent=(en?draft.name:draft.zh)+' · '+t('步骤 ','Step ')+(draft.stage+1)+t(' · 仅保存在此浏览器',' · saved in this browser');
- if(guide&&stage!==lastSheetStage){setSheet(stage===2?1:2);lastSheetStage=stage;}if(!guide)lastSheetStage=null;$('#boardPage').classList.toggle('guiding',!!guide);document.body.classList.toggle('on-board',!$('#boardPage').hidden);
+ if(guide&&stage!==lastSheetStage){setSheet(2);lastSheetStage=stage;}if(!guide)lastSheetStage=null;$('#boardPage').classList.toggle('guiding',!!guide);document.body.classList.toggle('on-board',!$('#boardPage').hidden);
  if(guide){const heading=$('#guidePane .journey-stage');if(heading)heading.setAttribute('aria-label',t('当前步骤','Current step')+' '+(stage+1));}
  if(!place&&!guide&&$('#results').classList.contains('popular-results'))$('#listTitle').textContent=t('推荐线索 · 热门 Top 10','Recommended · Trending Top 10');
 }
-export function floorChoice(){return selectedFloor;}
-export function enhanceIndoor({p,en,demo,stage=null,stepFree=false,records=[]}){
- const container=$('#indoorMap');const back=document.createElement('button');back.id='returnCampus';back.className='floor-return';back.textContent=en?'← Campus map':'← 校园地图';back.onclick=()=>$('#outdoorTab').click();container.prepend(back);if(!p||!demo)return;const plan=container.querySelector('.floor-sketch'),caption=container.querySelector('.indoor-caption');if(!plan)return;
- const t=(zh,eng)=>en?eng:zh;if(layerPlace!==p.id){layerPlace=p.id;selectedFloor=p.floor||'G';layerMode='3d';lastGuideStage=null;}if(stage!==lastGuideStage){if(stage===2)layerMode='3d';if(stage>=3){layerMode='2d';selectedFloor=p.floor||'G';}lastGuideStage=stage;}
- const levels=levelsFor(p.building,records.length?records:[p]);
- const detail=document.createElement('div');detail.id='selectedFloorPlan';plan.before(detail);
- const ui=document.createElement('div');ui.className='floor-explorer';ui.innerHTML=`<div class="floor-view-controls"><div role="group" aria-label="${t('楼层显示方式','Floor display mode')}"><button data-floor-mode="3d">${t('立体分层','3D layers')}</button><button data-floor-mode="2d">${t('平面示意','2D sketch')}</button></div><label>${t('查看楼层','View floor')}<select id="floorSelect">${levels.map(f=>`<option value="${f}">${f}</option>`).join('')}</select></label></div><div class="floor-stack" id="floorStack" role="group" aria-label="${t('演示建筑分层；不是实际建筑模型','Illustrative building layers; not an actual building model')}">${levels.map((f,i)=>`<button class="floor-plate" style="--layer:${i}" data-floor="${f}" aria-label="${t('查看楼层','View floor')} ${f}"><span class="floor-number">${f}</span>${f===p.floor?`<span class="floor-target">● ${t('目标','Target')}</span>`:''}<i></i><i></i><i></i></button>`).join('')}</div><p class="floor-layer-note" id="floorLayerNote"></p><small class="floor-assumption">${t('示意楼层 · 非实际建筑。','Illustrative floors · not an actual building model.')}</small>`;plan.before(ui);
- const draw=()=>{ui.querySelectorAll('[data-floor-mode]').forEach(b=>{const active=b.dataset.floorMode===layerMode;b.setAttribute('aria-pressed',String(active));});ui.querySelectorAll('[data-floor]').forEach(b=>{b.classList.toggle('active',b.dataset.floor===selectedFloor);b.setAttribute('aria-pressed',String(b.dataset.floor===selectedFloor));});$('#floorSelect').value=selectedFloor;$('#floorStack').hidden=layerMode!=='3d';plan.hidden=true;caption.hidden=true;detail.hidden=layerMode!=='2d';if(!detail.hidden)detail.innerHTML=floorPlan(p.building,selectedFloor,en,{stepFree,target:selectedFloor===p.floor});container.dataset.floorView=layerMode;$('#floorLayerNote').textContent=selectedFloor===p.floor?'◎ '+t('目标楼层','Destination floor')+' '+p.floor:t('当前 ','Viewing ')+selectedFloor+' → '+t('目标 ','Destination ')+(p.floor||'?');};
- ui.querySelectorAll('[data-floor-mode]').forEach(b=>b.onclick=()=>{layerMode=b.dataset.floorMode;draw();});ui.querySelectorAll('[data-floor]').forEach(b=>b.onclick=()=>{selectedFloor=b.dataset.floor;layerMode='2d';draw();});$('#floorSelect').onchange=e=>{selectedFloor=e.target.value;layerMode='2d';draw();};draw();
+export function mountFloorExplorer({container,p,en,stepFree,records}){
+ const t=(zh,eng)=>en?eng:zh;
+ const levels=levelsFor(p.building,[...records,p]);
+ const target=p.floor||null;
+ let mode='3d';
+ container.innerHTML=`<div class="floor-view-controls">
+  <div role="group" aria-label="${t('楼层显示方式','Floor display mode')}">
+   <button type="button" data-floor-mode="3d">${t('立体分层','3D layers')}</button>
+   <button type="button" data-floor-mode="2d">${t('平面示意','2D sketch')}</button>
+  </div>
+  <label>${t('查看楼层','View floor')} <select id="floorSelect">${levels.map(f=>`<option value="${f}">${f}</option>`).join('')}</select></label>
+ </div>
+ <p class="floor-layer-note" id="floorLayerNote" aria-live="polite"></p>
+ <div class="floor-stack" role="group" aria-label="${t('演示建筑分层','Illustrative building layers')}">${levels.map((f,i)=>`<button type="button" class="floor-plate" style="--layer:${i}" data-floor="${f}" aria-label="${t('查看楼层','View floor')} ${f}${f===target?' · '+t('目标楼层','Destination floor'):''}"><span class="floor-number">${f}</span>${f===target?`<span class="floor-target">● ${t('目标','Target')}</span>`:''}<i></i><i></i><i></i></button>`).join('')}</div>
+ <div id="selectedFloorPlan" hidden></div>
+ <small class="floor-assumption">${t('演示楼层与平面布局，未经现场核实。','Illustrative floors and layout. Not field-verified.')}</small>`;
+ const select=container.querySelector('#floorSelect');
+ const stack=container.querySelector('.floor-stack');
+ const plan=container.querySelector('#selectedFloorPlan');
+ const note=container.querySelector('#floorLayerNote');
+ const modes=container.querySelectorAll('[data-floor-mode]');
+ const plates=container.querySelectorAll('[data-floor]');
+ select.value=target||levels[0];
+ function draw(){
+  const level=select.value;
+  modes.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.floorMode===mode)));
+  plates.forEach(button=>{
+   const active=button.dataset.floor===level;
+   button.classList.toggle('active',active);
+   button.setAttribute('aria-pressed',String(active));
+  });
+  stack.hidden=mode!=='3d';
+  plan.hidden=mode!=='2d';
+  if(!plan.hidden)plan.innerHTML=floorPlan(p.building,level,en,{stepFree,target:level===target});
+  note.textContent=level===target?t('目标楼层 ','Destination floor ')+target:t('正在查看 ','Viewing ')+level+(target?' · '+t('目标楼层 ','Destination floor ')+target:'');
+ }
+ modes.forEach(button=>button.onclick=()=>{mode=button.dataset.floorMode;draw();});
+ plates.forEach(button=>button.onclick=()=>{select.value=button.dataset.floor;mode='2d';draw();select.focus({preventScroll:true});});
+ select.onchange=()=>{mode='2d';draw();};
+ draw();
+}
+export function enhanceIndoor({p,en,demo,stepFree}){
+ const container=$('#indoorMap'),back=document.createElement('button');
+ back.id='returnCampus';back.className='floor-return';back.textContent=en?'← Campus map':'← 校园地图';
+ back.onclick=()=>$('#outdoorTab').click();container.prepend(back);
+ if(p&&demo){
+  const level=p.floor||'G';
+  container.querySelector('.floor-sketch')?.remove();
+  container.querySelector('.indoor-caption')?.insertAdjacentHTML('beforebegin',floorPlan(p.building,level,en,{stepFree,target:!!p.floor}));
+ }
 }
 export function focusGuide(){const file=$('.case-file');file.scrollTop=0;const heading=$('#guidePane h3');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}if(!reduced())$('#guidePane .journey-stage')?.animate([{opacity:.4,transform:'translateY(8px)'},{opacity:1,transform:'translateY(0)'}],{duration:220});}

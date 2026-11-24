@@ -30,10 +30,6 @@ export function floorPlan(building,level,en,{stepFree=false,target=false}={}){
  const x=flip?46:374,dx=flip?375:47;
  return `<figure class="route-floor-plan"><svg viewBox="0 0 420 224" role="img" aria-label="${e(t('演示楼层图','Illustrative floor plan')+' '+level)}"><path class="plan-shell" d="M19 15H401V194H${bend}V205H19Z"/><g class="plan-rooms">${blocks}</g><path class="plan-corridor" d="M35 ${corridor}H386"/><circle class="plan-origin" cx="${x}" cy="${corridor}" r="7"/>${target?`<path class="plan-thread" d="M${x} ${corridor}H${dx}"/><circle class="plan-target" cx="${dx}" cy="${corridor}" r="7"/>`:''}<text x="${x}" y="187" text-anchor="${flip?'start':'end'}">${stepFree?t('电梯口','Lift landing'):level==='G'?t('入口','Entrance'):t('楼梯口','Stair landing')}</text><text x="210" y="217" text-anchor="middle">${e(level)} · ${t('演示布局','Illustrative layout')}</text></svg></figure>`;
 }
-export function floorChoices({building,places,en,selected=null,level=null,stepFree=false}){
- const t=(zh,eng)=>en?eng:zh,e=escapeText,levels=levelsFor(building.id,places),active=places.filter(p=>p.floor===level);
- return `<div class="route-level-controls"><button type="button" class="text-button" data-plan-level="" ${level===null?'aria-pressed="true"':''}>${t('3D 楼层','3D floors')}</button>${levels.map(f=>`<button type="button" data-plan-level="${e(f)}" aria-pressed="${f===level}">${e(f)}</button>`).join('')}</div>${level===null?`<div class="route-layer-stack" aria-label="${t('楼层示意','Illustrative layers')}">${levels.slice().reverse().map(f=>`<button type="button" data-plan-level="${e(f)}" class="${selected?.floor===f?'target':''}"><strong>${e(f)}</strong><span>${places.filter(p=>p.floor===f).map(p=>e(en?p.name:p.zh)).join(' · ')||'—'}</span></button>`).join('')}</div>`:floorPlan(building.id,level,en,{stepFree,target:active.length>0})}`;
-}
 export const profileKey='clue:profiles:v1';
 export function profileName(raw){
  const name=String(raw??'').normalize('NFKC').trim().replace(/\s+/g,' ').slice(0,40);

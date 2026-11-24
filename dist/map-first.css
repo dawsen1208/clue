@@ -39,6 +39,18 @@ body.meeting-layout{font-family:system-ui,"Segoe UI",sans-serif;color:var(--rout
 .route-floor-plan{margin:8px 0;background:#f8ecd2;border:1px solid #bba67b;border-radius:8px}
 .route-floor-plan svg{display:block;width:100%;max-height:285px}
 .route-floor-plan text{font:600 12px system-ui,sans-serif;fill:#2e4137}
+.meeting-layout #guideFloorExplorer{padding:12px;margin:0 0 12px;border:1px solid #bba67b;border-radius:8px;background:#fcf4df}
+#guideFloorExplorer .floor-target{position:absolute;top:14px;right:14px;color:#802d22;font-weight:700}
+#guideFloorExplorer .floor-layer-note{margin:8px 0;font-size:.88rem;color:#334638}
+#guideFloorExplorer .floor-assumption{font-size:.78rem;color:#614c36}
+#guideFloorExplorer .floor-stack{display:flex;flex-direction:column-reverse;gap:7px;height:auto;overflow:visible;padding:4px 12px 12px}
+#guideFloorExplorer .floor-plate{position:relative;left:auto;bottom:auto;transform:none;width:100%;height:44px;padding:0 12px;border:0;background:transparent;box-shadow:none;isolation:isolate}
+#guideFloorExplorer .floor-plate::before{content:'';position:absolute;inset:0 4px;z-index:-1;transform:skewX(-15deg);border:1px solid #91825f;background:#e8dbc0;box-shadow:0 4px #b3a17f}
+#guideFloorExplorer .floor-plate.active::before{background:#f2d1ae;border-color:#a14d36;box-shadow:0 4px #a14d36}
+#guideFloorExplorer .floor-plate .floor-number{top:8px;left:19px;font-size:21px}
+#guideFloorExplorer .floor-plate i{top:13px;bottom:auto;left:60px;width:18px;height:16px;pointer-events:none}
+#guideFloorExplorer .floor-plate i:nth-of-type(2){left:85px}
+#guideFloorExplorer .floor-plate i:nth-of-type(3){left:110px}
 .plan-shell{fill:#e3d1aa;stroke:#807653;stroke-width:2}.plan-rooms rect{fill:#f6e7cb;stroke:#978662}.plan-corridor{stroke:#fff8e5;stroke-width:17}.plan-thread{stroke:#a22e20;stroke-width:4}.plan-origin{fill:#1e6580}.plan-target{fill:#a22e20}
 .access-summary{display:grid;gap:4px;margin:8px 0 12px;font-size:.88rem;color:#334638}
 .detail-route-origin{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.25rem 1rem;color:#253d35}
