@@ -1,4 +1,4 @@
-import {buildings} from './data.mjs';
+import {originPoints as buildings} from './campus-routing.mjs?v=start-first';
 let lastKey=null,lastView='find',language=false,focusedBuilding=null,queuedFrame=null,animateNext=false,threadMotion=null,paperMotion=null;
 const motions=new WeakMap(),$=s=>document.querySelector(s),reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

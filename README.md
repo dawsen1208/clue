@@ -139,3 +139,7 @@ Version 0.9.0 replaces the default concept journey's written checkpoint lists wi
 Version 0.10.0 adds an opt-in Voice guide to the graphical journey, using the earlier detailed written instructions. Voice defaults off on each page load and offers Replay and Stop. Step changes replace old speech; leaving the guide or hiding the page stops it. English/Chinese speech uses available browser/device voices, with a visible fallback when unavailable. See [voice behaviour and verification limits](docs/17-optional-voice-guide-2026-11-18.md).
 
 新增默认关闭的语音指引，沿用此前详细文字，支持重播与停止。图形页面保持不变；“更多提示”可查看播报全文。音色与可用性依赖浏览器和设备。
+# Map-first update · 23 November 2026
+
+Start the local preview with `node preview.mjs`, then open `http://127.0.0.1:8788/`. English is the default. The Chinese version is available from the header. See [the map-first iteration record](docs/19-map-first-navigation-2026-11-23.md) for the current flow, coverage and approved photo requirements. Earlier sections document the previous iterations.
+

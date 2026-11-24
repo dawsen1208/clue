@@ -1,0 +1,157 @@
+/* Map-first Clue: typography and controls share the original paper palette. */
+:root{--route-ink:#233c32;--route-paper:#fbf3df;--route-thread:#9f362a}
+body.meeting-layout{font-family:system-ui,"Segoe UI",sans-serif;color:var(--route-ink)}
+#entryAnimation[hidden],#aboutPage[hidden],#profilePage[hidden],[hidden]{display:none!important}
+.meeting-layout .topbar nav,.meeting-layout .primary,.meeting-layout .text-button,.meeting-layout input,.meeting-layout select,.meeting-layout .sheet-handle{font-family:inherit}
+.meeting-layout .detail-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+.meeting-layout .detail-toolbar button{min-height:44px;font-size:1rem!important;font-weight:650;color:var(--route-ink)}
+.meeting-layout .place-title,.meeting-layout .journey-stage h3{line-height:1.14}
+.meeting-layout .building-line,.meeting-layout .detail-note{color:#584b36;font-size:.95rem}
+.route-origin-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px;color:#223a2f;background:#fbf5e5;border-radius:6px}
+.route-origin-row>strong{flex:1 1 100%;font-size:.92rem}
+.route-origin-row .outline{min-height:38px;padding:5px 9px;font-size:.82rem}
+.route-check{font-size:.84rem;display:flex;align-items:center;gap:5px;min-height:38px}
+.route-check input{width:18px;height:18px;accent-color:#304a36}
+#originDialog .route-check{margin-block:8px}
+.route-pin-target{fill:transparent!important;stroke:none!important;pointer-events:all}
+.route-pin-dot{fill:#614c38!important;stroke:#fff7df!important;stroke-width:1.5;pointer-events:none}
+.route-landmark .route-pin-dot{fill:#27594f!important}
+.route-pin.selected .route-pin-dot,.route-pin:hover .route-pin-dot,.route-pin:focus .route-pin-dot{fill:#ae3427!important;stroke-width:3px}
+.route-pin.is-origin .route-pin-dot{fill:#246184!important}
+.route-pin text{display:none;fill:#283e35!important;stroke:#fffaec;stroke-width:4px;paint-order:stroke;font:700 16px system-ui,sans-serif!important;pointer-events:none}
+.route-pin:hover text,.route-pin:focus text,.route-pin.selected text,.route-pin.is-origin text{display:block}
+#originMarker,#mapConnection{pointer-events:none}
+#mapConnection .clue-path{fill:none;stroke:#a92d24;stroke-width:6;stroke-linejoin:round;stroke-linecap:round}
+.route-level-controls{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}
+.route-level-controls button{border:1px solid #b0a181;background:#fcf6e6;color:#263c31;min-width:40px;min-height:40px;padding:5px 8px;border-radius:5px;font:650 .9rem system-ui,sans-serif}
+.route-level-controls button[aria-pressed=true]{color:white;background:#334c40}
+.route-layer-stack{padding:5px 13px 10px;display:grid;gap:4px}
+.route-layer-stack button{display:flex;align-items:center;text-align:left;gap:10px;transform:skewX(-8deg);padding:6px 10px;min-height:38px;background:#ede1c4;border:1px solid #a99467;color:#314137;box-shadow:0 3px #bdab85}
+.route-layer-stack button>*{transform:skewX(8deg)}
+.route-layer-stack button strong{font-size:.94rem;min-width:28px}
+.route-layer-stack button span{font-size:.82rem}
+.route-layer-stack button.target{background:#fbddd0;border:2px solid var(--route-thread)}
+.route-building-places{margin:10px 0 14px 14px;padding-left:12px;border-left:2px solid var(--route-thread);display:grid;gap:7px}
+.route-building-places button{position:relative;display:grid;gap:3px;text-align:left;border:1px solid #beb094;border-radius:5px;background:#fff9ea;padding:8px 10px;color:#293d31;min-height:44px}
+.route-building-places button::before{content:'';position:absolute;width:12px;left:-13px;top:50%;border-top:2px solid var(--route-thread)}
+.route-building-places button[aria-current]{border-color:var(--route-thread)}
+.route-building-places small,.access-summary small{font-size:.82rem;color:#614c36}
+.route-floor-plan{margin:8px 0;background:#f8ecd2;border:1px solid #bba67b;border-radius:8px}
+.route-floor-plan svg{display:block;width:100%;max-height:285px}
+.route-floor-plan text{font:600 12px system-ui,sans-serif;fill:#2e4137}
+.plan-shell{fill:#e3d1aa;stroke:#807653;stroke-width:2}.plan-rooms rect{fill:#f6e7cb;stroke:#978662}.plan-corridor{stroke:#fff8e5;stroke-width:17}.plan-thread{stroke:#a22e20;stroke-width:4}.plan-origin{fill:#1e6580}.plan-target{fill:#a22e20}
+.access-summary{display:grid;gap:4px;margin:8px 0 12px;font-size:.88rem;color:#334638}
+.route-extra{margin:12px 0;font-size:.9rem}
+.route-extra summary{cursor:pointer}
+.building-photo{margin:10px 0 15px}.building-photo img{width:100%;max-height:250px;object-fit:contain;background:#eee3c9}
+.photo-missing{padding:16px;background:#eee3c9;display:flex;align-items:center;gap:12px}.photo-missing small{display:block;margin-top:4px}.building-photo figcaption a{font-size:.9rem}
+.profile-page{max-width:52rem;margin-inline:auto;min-height:70vh}.profile-page #profileForm{display:grid;gap:12px;max-width:28rem}.profile-page input{display:block;width:100%;padding:10px;border:1px solid #a99b7e}.profile-welcome{display:flex;align-items:center;gap:15px}.profile-routes li{padding:7px 0}.profile-routes small{display:block;color:#62563d}
+#notesDialog{width:min(880px,94vw);max-height:88dvh;overflow:auto}#notesDialog .about-page{padding:12px 0}
+.meeting-layout .topbar nav .nav-feedback{font-size:inherit}
+.meeting-layout.map-overview .explorer-toolbar{width:min(610px,calc(100% - 24px))}
+.meeting-layout.map-overview .explorer-search-row:not([hidden]){display:grid!important}
+.meeting-layout.map-overview .explorer-view-row{padding-top:5px}
+.meeting-layout .explorer-search-row #sharedOriginSlot{display:none}
+.meeting-layout .explorer-search-row{grid-template-columns:minmax(0,1fr)}
+.meeting-layout .map-click-hint,.meeting-layout #explorerContext{display:none}
+.meeting-layout .header-actions .mode-chip{min-height:38px}
+.meeting-layout .route-origin-row [disabled]{opacity:.55}
+.meeting-layout .sheet-handle:active,.meeting-layout .route-origin-row button:active,.meeting-layout .primary:active{transform:translateY(1px);filter:brightness(.91)}
+.meeting-layout .branch-link-canvas{pointer-events:none}
+@media(max-width:800px){
+ .meeting-layout.map-overview .explorer-toolbar{top:73px;z-index:30;padding:5px}
+ .meeting-layout.map-overview .explorer-search-row .search-box{min-height:38px}
+ .meeting-layout.map-overview .case-workspace .board-topline{display:none}
+ .meeting-layout.map-overview .case-workspace .map-controls,.meeting-layout.map-overview .case-workspace .map-compass{top:216px!important}
+ .meeting-layout .route-origin-row>strong{font-size:.8rem}
+ .meeting-layout .route-origin-row{gap:3px 7px;padding:4px 5px}
+ .meeting-layout .route-check{min-height:29px;font-size:.74rem}
+ .meeting-layout .route-origin-row .outline{min-height:34px}
+ .meeting-layout .header-actions{gap:4px}
+ .meeting-layout .header-actions .mode-chip{font:650 .65rem system-ui,sans-serif;padding:3px 5px;white-space:normal}
+ .meeting-layout .header-actions .mode-chip .icon{display:none}
+ .meeting-layout .topbar nav a,.meeting-layout .topbar nav button{font-size:.71rem!important;padding-inline:2px;min-width:0}
+ .meeting-layout .route-floor-plan svg{max-height:175px}
+ .meeting-layout .inside-view .explorer-toolbar{display:none}
+}
+.locate-route-map{margin:8px 0 14px;border:1px solid #b5a482;border-radius:7px;overflow:hidden;background:#faf2df}
+.locate-route-map figcaption{display:flex;flex-wrap:wrap;gap:3px 10px;align-items:baseline;padding:8px 10px;color:#304337}
+.locate-route-map figcaption span{font-size:.78rem;color:#5d4e36}
+.locate-route-map svg{display:block;width:100%;height:clamp(170px,33dvh,310px);background:#e6e4d8}
+.locate-route-map polyline{fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.locate-route-halo{stroke:#fff9e7;stroke-width:8}
+.locate-route-line{stroke:#a33027;stroke-width:4}
+.locate-route-map circle{stroke:#fffcf1;stroke-width:2;vector-effect:non-scaling-stroke}
+.locate-route-start{fill:#24678c}.locate-route-end{fill:#a33027}
+.locate-route-endpoints{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;list-style:none;margin:0;padding:8px 10px}
+.locate-route-endpoints li{display:grid;gap:3px;align-content:start;border-left:3px solid #24678c;padding-left:7px;line-height:1.25}
+.locate-route-endpoints li:last-child{border-color:#a33027}
+.locate-route-endpoints span{font-size:.73rem;color:#5d4e36}
+.locate-route-endpoints strong{font-size:.86rem;overflow-wrap:anywhere}
+@media(max-width:800px){.locate-route-map svg{height:clamp(165px,27dvh,240px)}}
+.meeting-layout .journey-stage[data-stage="0"] #confirmOrigin{position:static;box-shadow:none}
+#confirmOrigin + .narration-controls{margin-top:10px}
+
+.meeting-layout .route-pin.route-landmark[data-building=station] text,.meeting-layout .route-pin.route-landmark[data-building=north] text,.meeting-layout .route-pin.route-landmark[data-building=south] text{display:block}
+.meeting-layout .route-pin.route-landmark[data-building=south] text{transform:translate(-15px,19px);text-anchor:end}
+.meeting-layout .route-pin.route-landmark[data-building=north] text{transform:translate(-14px,-2px);text-anchor:end}
+.meeting-layout #startGuide{margin-bottom:10px}
+.meeting-layout .inside-view #indoorMap .floor-return{margin-left:12px;margin-right:auto}
+.route-map-loading{position:absolute;z-index:18;top:50%;left:50%;transform:translate(-50%,-50%);width:max-content;max-width:90%;padding:10px 14px;border:1px solid #a99366;background:#fff7df;color:#354a3c;box-shadow:0 4px 14px #3d302520;border-radius:6px;font-size:.9rem}
+.route-map-loading::before{content:'';display:inline-block;width:10px;height:10px;background:#9f362a;border-radius:50%;margin-right:8px;animation:route-pin-pulse .9s alternate infinite}
+@keyframes route-pin-pulse{to{opacity:.35;transform:scale(.75)}}
+@media(prefers-reduced-motion:reduce){.route-map-loading::before{animation:none}}
+@media(max-width:800px){
+ .meeting-layout .has-case .explorer-toolbar{display:none}
+ .meeting-layout .has-case .case-workspace .board-topline{top:10px!important}
+ .meeting-layout .has-case .case-workspace .map-controls,.meeting-layout .has-case .case-workspace .map-compass{top:62px!important}
+ .meeting-layout .has-case .resume-trail{display:none}
+ .meeting-layout .case-workspace:has([data-floor-view]) #indoorMap{padding-top:8px}
+}
+
+/* Keep the first necessary action above the map search and secondary controls. */
+.meeting-layout #boardPage.start-needed .explorer-search-row{display:none!important}
+.meeting-layout.map-overview #exploreMap[aria-pressed=true]{background:#344c40;color:#fff8e6}
+.meeting-layout.map-overview #exploreList{background:#f3e8cd;color:#3c493d}
+.route-origin-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;padding:7px 9px}
+#routeStartStep{grid-column:1/-1;font-weight:750}
+#routeOriginStatus{align-self:center;font-size:.9rem;line-height:1.35}
+.start-needed #routeOriginStatus{grid-column:1/-1}
+.start-needed #routeOriginButton{grid-column:1/-1;justify-self:start}
+#routeOriginButton{min-height:44px;padding:6px 12px;border-radius:4px}
+.route-origin-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px 8px}
+#routeMapOriginButton{min-height:44px;padding:6px 12px;border-radius:4px}
+#routeMapOriginButton[aria-pressed=true]{background:#87392b;color:#fff8e6}
+.meeting-layout .case-workspace:has(#mapHint:not([hidden])) #campusMap{cursor:crosshair}
+.route-origin-row:not(.start-needed) #routeOriginButton{color:#294339;background:#f6ecd5;box-shadow:none}
+#routeDestinationTools{grid-column:1/-1;display:flex;align-items:center;gap:5px 10px;flex-wrap:wrap}
+#routeDestinationHint{flex:1 1 100%;font-size:.82rem;line-height:1.3}
+@media(max-width:800px){
+ .route-origin-row{padding:5px 6px;gap:3px 7px}
+ .route-origin-row #routeOriginStatus{font-size:.77rem}
+ .route-origin-row #routeOriginButton{min-height:39px;padding:5px 8px;font-size:.75rem}
+ .route-origin-row #routeMapOriginButton{min-height:39px;padding:5px 8px;font-size:.75rem}
+ #routeDestinationHint{font-size:.75rem}
+ .meeting-layout.map-overview .case-workspace .map-controls,.meeting-layout.map-overview .case-workspace .map-compass{top:226px!important}
+}
+
+/* The toolbar reads like one pinned case note, with a clear next action. */
+.meeting-layout .route-origin-row{gap:6px 10px;padding:9px 11px;background:#f9f0da;border-left:3px solid #a43c2f;color:#253d34}
+.route-step-heading{grid-column:1/-1;display:flex;align-items:center;gap:8px;min-width:0}
+#routeStepNumber{display:grid;place-items:center;flex:none;min-width:27px;height:24px;padding:0 4px;border:1px solid #ad624c;background:#f0dfbd;color:#7b3528;font:700 .74rem/1 'Courier New',monospace}
+.route-step-heading #routeStartStep{font:700 clamp(1rem,1.6vw,1.22rem)/1.23 Georgia,'Noto Serif SC','Songti SC',SimSun,serif;color:#243d33}
+html[lang=zh-CN] .route-step-heading #routeStartStep{font-family:'Microsoft YaHei','Noto Sans CJK SC',system-ui,sans-serif}
+#routeOriginStatus{grid-column:1/-1;color:#493f31;font:500 .89rem/1.4 system-ui,'Microsoft YaHei',sans-serif}
+.route-origin-actions button,#routeDestinationTools button{font:650 .86rem/1.18 system-ui,'Microsoft YaHei',sans-serif}
+.route-origin-actions #routeOriginButton{background:#f9f1dd;color:#30483a;border:1px solid #ae9a76}
+.route-origin-actions #routeMapOriginButton{background:#294438;color:#fff8e8}
+.route-origin-actions #routeMapOriginButton[aria-pressed=true]{background:#87392b}
+#routeDestinationTools{border-top:1px dashed #cab58d;padding-top:6px}
+@media(max-width:800px){
+ .meeting-layout .route-origin-row{padding:6px 7px;gap:4px 7px}
+ .route-step-heading #routeStartStep{font-size:.98rem}
+ #routeStepNumber{min-width:24px;height:22px}
+ .route-origin-row #routeOriginStatus{font-size:.78rem}
+ .meeting-layout .topbar nav{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .meeting-layout .topbar nav>a,.meeting-layout .topbar nav>button{font-size:.82rem!important}
+}
