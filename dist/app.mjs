@@ -275,7 +275,52 @@ function renderIndoorBase(){const p=state.guide||state.selected;if(!p){$('#indoo
 function renderIndoor(){renderIndoorBase();enhanceIndoor({p:state.guide||state.selected,en,demo:demo(),stepFree:state.stepFree});}
 function switchMap(inside){$('.case-workspace').classList.toggle('inside-view',inside);$('#outdoorMap').hidden=false;$('#indoorMap').hidden=!inside;$('#indoorTab').classList.toggle('active',inside);$('#outdoorTab').classList.toggle('active',!inside);if(inside)renderIndoor();animateMapStage(inside);}
 $('#outdoorTab').onclick=()=>switchMap(false);$('#indoorTab').onclick=()=>{if(demo()&&state.guide&&state.stage===2){setSheet(2);focusGuide();return;}switchMap(true);};$('#pickOrigin').onclick=()=>{state.pick=!state.pick;switchMap(false);renderMap();};$('#exampleRoom').onclick=()=>openPlace('library404');$('#search').oninput=e=>{state.building=null;state.query=e.target.value;render();if(state.query.trim())setSheet(2);};$('#searchForm').onsubmit=e=>{e.preventDefault();state.building=null;state.query=$('#search').value;render();setSheet(2);};document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{state.building=null;state.category=b.dataset.category;if(state.category!=='toilet'){state.accessible=false;state.neutral=false;$('#accessible').checked=false;$('#neutral').checked=false;}render();});$('#accessible').onchange=e=>{state.accessible=e.target.checked;render();};$('#neutral').onchange=e=>{state.neutral=e.target.checked;render();};$('#changeOrigin').onclick=openOrigin;$('#setOrigin').onclick=()=>{const point=mapRow($('#originSelect').value);if(!point){$('#originSelect').reportValidity();return;}state.stepFree=$('#originStepFree').checked;$('#originDialog').close();chooseOrigin(point);};
-function openScope(){$(`input[name="mode"][value="${state.mode}"]`).checked=true;$('#scopeDialog').showModal();}$('#scopeButton').onclick=openScope;$('#footerScope').onclick=openScope;document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$('#'+b.dataset.close).close());$('#acceptScope').onclick=()=>{const mode=$('input[name="mode"]:checked').value;if(mode==='evidence'){state.stepFree=false;state.accessible=false;}if(mode!==state.mode){stopTimers();state.guide=null;$('#arrivalPrompt').hidden=true;if(state.selected)location.hash='/place/'+state.selected.id;}state.mode=mode;try{sessionStorage.setItem('clue:mode',mode);}catch{}if(state.selected)state.selected=byId(state.selected.id);$('#scopeDialog').close();try{sessionStorage.setItem('clue:briefed','1');}catch{}render();if(state.view==='about'){renderAbout();render();}switchMap(false);};
+const scopeDialog=$('#scopeDialog');
+const scopeClose=scopeDialog.querySelector('[data-close]');
+const scopeAccept=$('#acceptScope');
+const scopeTitle=$('#scopeTitle');
+let initialScope=false;
+
+function openScope(){
+ scopeDialog.querySelector(`input[name="mode"][value="${state.mode}"]`).checked=true;
+ scopeDialog.showModal();
+ if(initialScope)scopeTitle.focus();
+}
+function openInitialScope(){
+ try{if(sessionStorage.getItem('clue:briefed')==='1')return;}catch{}
+ initialScope=true;
+ scopeClose.hidden=true;
+ scopeAccept.innerHTML=t('继续进入地图','Continue to map')+icon('arrow');
+ openScope();
+}
+scopeTitle.tabIndex=-1;
+scopeDialog.addEventListener('cancel',event=>{if(initialScope)event.preventDefault();});
+$('#scopeButton').onclick=openScope;
+$('#footerScope').onclick=openScope;
+document.querySelectorAll('[data-close]').forEach(button=>button.onclick=()=>$('#'+button.dataset.close).close());
+scopeAccept.onclick=()=>{
+ const mode=scopeDialog.querySelector('input[name="mode"]:checked').value;
+ const enteringMap=initialScope;
+ if(mode==='evidence'){state.stepFree=false;state.accessible=false;}
+ if(mode!==state.mode){
+  stopTimers();state.guide=null;$('#arrivalPrompt').hidden=true;
+  if(state.selected)location.hash='/place/'+state.selected.id;
+ }
+ state.mode=mode;
+ try{
+  sessionStorage.setItem('clue:mode',mode);
+  sessionStorage.setItem('clue:briefed','1');
+ }catch{}
+ if(state.selected)state.selected=byId(state.selected.id);
+ scopeDialog.close();
+ initialScope=false;
+ scopeClose.hidden=false;
+ scopeAccept.innerHTML=t('应用显示模式','Apply view mode')+icon('arrow');
+ render();
+ if(state.view==='about'){renderAbout();render();}
+ switchMap(false);
+ if(enteringMap)$('#routeMapOriginButton')?.focus({preventScroll:true});
+};
 function mobileMapLabel(open){$('#mobileMapToggle').innerHTML=icon(open?'close':'pin')+(open?t('返回档案','Back to file'):t('打开地图','Open map'));}$('#mobileMapToggle').onclick=()=>{const open=$('#boardPage').classList.toggle('mobile-map-open');mobileMapLabel(open);};
 function renderAbout(){$('#aboutPage').innerHTML=`<div class="about-heading"><p class="eyebrow">THE DESIGN BEHIND THE CASE</p><h1>${t('一份设计提案。<br><em>一张更好用的线索板。</em>','A design proposal.<br><em>A better trail to follow.</em>')}</h1><p>${t('Clue 关注校园里的小地点查找：从建筑，到楼层，再到真正要去的地方。探案感服务于探索与记忆，不增加完成任务的难度。','Clue focuses on the small places within campus: building, floor and the actual destination. Its detective-board character supports curiosity and recall without adding puzzles to essential tasks.')}</p></div><div class="about-grid"><article class="paper"><span>01 / EXPERIENCE</span><h2>${t('体验完整流程','Explore a complete journey')}</h2><p>${t('默认以完善后端为设计前提：搜索、附近设施、楼层图、通行偏好与主动提醒可以连贯体验；它们是可测试的前端情境。','The concept assumes a complete backend, connecting search, nearby facilities, floor sketches, access preferences and proactive prompts into a testable frontend scenario.')}</p></article><article class="paper"><span>02 / REALITY</span><h2>${t('真实能力集中说明','Keep the real scope clear')}</h2><p>${t('真实实现包括前端搜索、地图、筛选、收藏和页面状态。没有连接室内定位、完整房间库、可通行路径、实时开放状态或消息服务。','The frontend implements search, map interaction, filtering, bookmarks and page states. No indoor-positioning, complete directory, routing, live availability or messaging service is connected.')}</p><button class="text-button" id="aboutScope">${t('打开能力与假设说明','Open reality & assumptions')} ↗</button></article><article class="paper"><span>03 / CONTROL</span><h2>${t('让主动性有分寸','A timely clue, with control')}</h2><p>${t('选择地点后可授权体验到楼提醒。模拟事件触发下一步建议，使用者可以暂缓、暂停或静音。没有后台追踪；演示不申请真实 GPS 权限。','Opt into an approach prompt when selecting a place. A simulated event suggests the next step; snooze, pause or mute it. No background tracking or real GPS permission is requested.')}</p></article><article class="paper"><span>04 / EVIDENCE</span><h2>${t('设计假设与用户证据分开','Separate assumptions from evidence')}</h2><p>${t('视觉方向与“假设后端完善”的方式来自项目需求，不是用户研究结论。仍需问卷、访谈、现场观察和任务测试来检验清晰度、效率、可接受性与无障碍体验。','The visual direction and assumed-backend approach are design choices, not user-study findings. Questionnaires, interviews, field observation and task tests are still needed to evaluate clarity, effort, acceptance and accessibility.')}</p></article></div><h2>${t('公开资料与地图来源','Public directory & map sources')}</h2><div class="source-list">${Object.values(sources).map(s=>`<a href="${s.url}" target="_blank" rel="noopener">${esc(s.name)} ↗</a>`).join('')}</div><p class="small">${t('公开资料查阅于','Sources consulted')} ${checked} · ${t('地图图像继承提供的校园地图。演示层不改写原始资料。','Map artwork comes from the supplied campus map. Scenario data does not overwrite the original directory.')}</p><p class="small">${t('收藏与可恢复的查找草稿保存在此浏览器（最长七天，可清除）；反馈和演示回信保存在此浏览器；没有真实消息收发。没有上传个人课表、位置或密钥。','Bookmarks and resumable trail drafts stay in this browser (up to seven days, with Clear); feedback and simulated replies stay in this browser, with no real message delivery. No personal timetable, location or secrets are uploaded.')}</p>`;$('#aboutScope').onclick=openScope;decorateAbout(en);}
 function route(){const parts=location.hash.replace(/^#\/?/,'').split('/'),page=parts[0]==='profile'?'saved':parts[0]||'find';if(page!=='guide'&&state.guide){stopTimers();state.guide=null;$('#arrivalPrompt').hidden=true;}if(['place','guide'].includes(page)&&byId(parts[1])){state.selected=byId(parts[1]);if(page==='guide'&&!state.guide){const prior=loadProgress();if((!state.origin||!allowed(state.selected))&&prior?.placeId!==parts[1]){state.pendingPlace=state.selected.id;location.hash='/place/'+parts[1];openOrigin();}else{state.guide=state.selected;state.stage=initialGuideStage(state.origin,state.guide,demo());state.startStage=state.stage;if(prior?.placeId===parts[1])applyProgress(prior);}}}else{state.selected=null;if(page==='saved'&&state.view!=='saved'){state.building=null;state.query='';state.category='all';state.accessible=false;state.neutral=false;$('#search').value='';$('#accessible').checked=false;$('#neutral').checked=false;}state.view=['saved','about'].includes(page)?page:'find';}$('#boardPage').hidden=false;if(!notesDialog.open)$('#aboutPage').hidden=true;$('#mobileMapToggle').hidden=false;if(page==='about'&&!notesDialog.open)notesButton.click();render();if(state.guide){switchMap(demo()?state.stage>=3:state.stage>0);requestAnimationFrame(()=>{$('.case-file').scrollTop=0;});}window.scrollTo({top:0,behavior:'instant'});}
@@ -326,5 +371,5 @@ window.addEventListener('hashchange',route);window.addEventListener('pagehide',s
 if(!state.selected&&!state.guide&&state.view==='find'){
  $('#exploreMap').click();
  syncControls();
- playEntrance({en});
+ playEntrance({en,onFinish:openInitialScope});
 }
