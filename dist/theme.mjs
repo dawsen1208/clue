@@ -23,24 +23,88 @@ export function decorateScene({view,place,stage,saved,places,buildings,mode,en,o
  const head=document.querySelector('.board-topline>span:first-child');head.innerHTML=`<span class="red-pin"></span>${place?(stage>0?t('线索 B / 楼层定位','EXHIBIT B / FLOOR CLUE'):t('线索 A / 建筑位置','EXHIBIT A / CAMPUS CLUE')):view==='saved'?t('收藏地图 / 留下的线索','ARCHIVE MAP / KEPT CLUES'):t('校园线索地图','THE CAMPUS BOARD')}`;
  const detail=document.getElementById('detailPane');detail.dataset.file=place?.building||'';
  let fileSlip=document.getElementById('fileIndexSlip');if(!fileSlip){fileSlip=document.createElement('div');fileSlip.id='fileIndexSlip';fileSlip.className='file-index-slip';detail.before(fileSlip);}fileSlip.hidden=!place;fileSlip.innerHTML=place?`<span>${escape(place.building)}</span><small>${escape(place.type==='room'?t('教室线索','ROOM CLUE'):t('设施线索','FACILITY CLUE'))}</small><i aria-hidden="true"></i>`:'';
- document.querySelectorAll('dialog').forEach(d=>d.classList.add('case-dialog'));
- const about=document.getElementById('aboutPage'),grid=about.querySelector('.about-grid');
- if(grid&&!grid.parentElement.classList.contains('field-guide-board')){const mount=document.createElement('div');mount.className='field-guide-board';grid.before(mount);mount.append(grid);let next=mount.nextSibling;while(next){const after=next.nextSibling;mount.append(next);next=after;}}
- if(about.querySelector('.about-heading')&&!about.querySelector('#replayEntrance')){const tools=document.createElement('div');tools.className='about-tools';const replay=document.createElement('button');replay.id='replayEntrance';replay.className='outline';const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;replay.textContent=reduced?t('已遵循减少动态效果偏好','Reduced motion is respected'):t('重播线索板开场','Replay the opening scene');replay.disabled=reduced;replay.onclick=()=>playEntrance({en,force:true});tools.append(replay);const caption=document.createElement('span');caption.textContent=t('图钉、红线与纸张：同一本校园手册。','Pins, threads and paper. One campus casebook.');tools.append(caption);about.querySelector('.about-heading').append(tools);}
+ document.querySelectorAll('dialog:not(.opening-dialog)').forEach(dialog=>dialog.classList.add('case-dialog'));
  const file=document.querySelector('.case-file');file.dataset.phase=stage>=0?String(stage+1):'file';
  const complete=document.getElementById('finishGuide');if(complete&&!complete.dataset.closedHook){complete.dataset.closedHook='1';const destination=place;complete.addEventListener('click',()=>showCaseClosed({place:destination,building:(buildings.find(b=>b.id===destination.building)||{}).name||destination.building,en,onSave:()=>onSave?.(destination.id),onExplore,saved:saved.includes(destination.id)}));}
 }
 
+export function decorateAbout(en){
+ const about=document.getElementById('aboutPage');
+ const heading=about.querySelector('.about-heading');
+ const grid=about.querySelector('.about-grid');
+ if(!heading||!grid)return;
+
+ const mount=document.createElement('div');
+ mount.className='field-guide-board';
+ grid.before(mount);
+ while(mount.nextSibling)mount.append(mount.nextSibling);
+
+ const tools=document.createElement('div');
+ tools.className='about-tools';
+ const replay=document.createElement('button');
+ replay.type='button';
+ replay.id='replayEntrance';
+ replay.className='outline';
+ replay.textContent=en?'Replay opening':'重播开场';
+ const notice=document.createElement('span');
+ notice.textContent=en?'Opening animation follows your reduced-motion setting.':'开场动画会遵循系统的减少动态效果设置。';
+ notice.id='replayMotionNotice';
+ replay.onclick=()=>playEntrance({en,force:true});
+ tools.append(replay,notice);
+ heading.append(tools);
+ updateReplayMotion();
+}
+
+const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+function updateReplayMotion(){
+ const replay=document.getElementById('replayEntrance');
+ if(!replay)return;
+ replay.disabled=reducedMotion.matches;
+ document.getElementById('replayMotionNotice').hidden=!reducedMotion.matches;
+}
+reducedMotion.addEventListener('change',updateReplayMotion);
 let finishActive=null;
 export function playEntrance({en=false,force=false,onFinish=()=>{}}={}){
- const t=(zh,eng)=>en?eng:zh;finishActive?.();document.getElementById('entryAnimation')?.remove();
- const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;let entered=false;try{entered=sessionStorage.getItem('clue:entered-v2')==='1';sessionStorage.setItem('clue:entered-v2','1');}catch{}
- if(reduced||(!force&&entered)){onFinish();return;}
+ const t=(zh,eng)=>en?eng:zh;
+ if(reducedMotion.matches){onFinish();return;}
+ if(!force){
+  try{
+   if(sessionStorage.getItem('clue:entered-v2')==='1'){onFinish();return;}
+   sessionStorage.setItem('clue:entered-v2','1');
+  }catch{}
+ }
+ finishActive?.();
+ const dialog=document.createElement('dialog');
+ dialog.className='opening-dialog';
+ dialog.setAttribute('aria-label',t('Clue 开场','Clue opening'));
  const crop=document.querySelector('#campusArtworkCrop rect');const cropBox=crop?['x','y','width','height'].map(key=>crop.getAttribute(key)).join(' '):'786 47 946 1037';
- const previous=document.activeElement,scene=document.createElement('div');scene.id='entryAnimation';scene.className='entry-animation entry-scene';scene.setAttribute('aria-hidden','true');
+ const scene=document.createElement('div');scene.id='entryAnimation';scene.className='entry-animation entry-scene';scene.setAttribute('aria-hidden','true');
  scene.innerHTML=`<div class="opening-vignette"></div><div class="opening-desk"><div class="opening-folder"></div><div class="opening-map"><div class="opening-fold one"></div><div class="opening-fold two"></div><svg class="opening-artwork" viewBox="${cropBox}" aria-hidden="true"><defs><clipPath id="openingArtworkCrop">${crop?.outerHTML||'<rect x="786" y="47" width="946" height="1037"/>'}</clipPath></defs><image href="assets/campus-map.webp" x="0" y="0" width="1786" height="1263" clip-path="url(#openingArtworkCrop)"/></svg><svg class="opening-threads" viewBox="0 0 800 500" preserveAspectRatio="none"><path d="M125 355 385 165 635 290"/><circle cx="125" cy="355" r="11"/><circle cx="385" cy="165" r="11"/><circle cx="635" cy="290" r="11"/></svg><span class="opening-pin pin-a"></span><span class="opening-pin pin-b"></span><span class="opening-pin pin-c"></span></div><div class="opening-note note-a"><span>CLUE / 01</span><strong>${t('一栋楼','A building')}</strong><small>FOLLOW THE PIN</small></div><div class="opening-note note-b"><span>CLUE / 02</span><strong>${t('一个小地点','A little place')}</strong><small>CONNECT THE DOTS</small></div><div class="opening-glass"></div><div class="opening-brand"><img src="assets/mark.svg" alt=""><strong>Clue<span>.</span></strong><p>${t('循着线索，找到去处。','Follow the clue. Find your place.')}</p></div><span class="opening-seal">CAMPUS<br>CASEBOOK<br>OPEN</span></div><div class="opening-chapters"><span>01 / UNFOLD</span><i></i><span>02 / CONNECT</span><i></i><span>03 / DISCOVER</span></div>`;
- const skip=document.createElement('button');skip.className='skip-intro';skip.textContent=t('跳过开场','Skip opening');document.body.append(scene,skip);document.body.classList.add('cinematic-entering');let timer;
- const finish=()=>{clearTimeout(timer);scene.remove();skip.remove();document.body.classList.remove('cinematic-entering');finishActive=null;const main=document.getElementById('main');if(force&&previous?.isConnected)previous.focus?.({preventScroll:true});else{main.setAttribute('tabindex','-1');main.focus({preventScroll:true});}onFinish();};finishActive=finish;skip.onclick=finish;timer=setTimeout(finish,3200);
+ const skip=document.createElement('button');
+ skip.type='button';
+ skip.className='skip-intro';
+ skip.autofocus=true;
+ skip.textContent=t('跳过开场','Skip opening');
+ dialog.append(scene,skip);
+ document.body.append(dialog);
+ document.body.classList.add('cinematic-entering');
+
+ const finish=()=>{
+  clearTimeout(timer);
+  reducedMotion.removeEventListener('change',stopForReducedMotion);
+  dialog.close();
+  dialog.remove();
+  document.body.classList.remove('cinematic-entering');
+  finishActive=null;
+  onFinish();
+ };
+ const stopForReducedMotion=event=>{if(event.matches)finish();};
+ finishActive=finish;
+ skip.onclick=finish;
+ dialog.addEventListener('cancel',event=>{event.preventDefault();finish();});
+ reducedMotion.addEventListener('change',stopForReducedMotion);
+ const timer=setTimeout(finish,3200);
+ dialog.showModal();
 }
 
 export function showCaseClosed({place,building,en=false,onSave=()=>{},onExplore,saved=false,onFeedback}){
