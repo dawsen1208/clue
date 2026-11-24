@@ -101,6 +101,7 @@ body.meeting-layout{font-family:system-ui,"Segoe UI",sans-serif;color:var(--rout
 .locate-route-endpoints strong{font-size:.86rem;overflow-wrap:anywhere}
 @media(max-width:800px){.locate-route-map svg{height:clamp(165px,27dvh,240px)}}
 .meeting-layout .journey-stage[data-stage="0"] #confirmOrigin{position:static;box-shadow:none}
+.meeting-layout .journey-stage[data-stage="1"]:has(.photo-gallery) #enterBuilding{position:static;box-shadow:none}
 #confirmOrigin + .narration-controls{margin-top:10px}
 
 .meeting-layout .route-pin.route-landmark[data-building=station] text,.meeting-layout .route-pin.route-landmark[data-building=north] text,.meeting-layout .route-pin.route-landmark[data-building=south] text{display:block}
