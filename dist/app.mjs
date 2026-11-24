@@ -214,7 +214,7 @@ function renderGuide(){
  setupBuildingPhotos($('#guidePane'));
  const go=stage=>{stopTimers();state.stage=stage;state.recovery=false;$('#arrivalPrompt').hidden=true;refreshGuideOnly();if(stage===1&&state.reminders&&!state.muted)queuePrompt(8000);};
  const bind=(id,fn)=>$('#'+id)?.addEventListener('click',fn);
- bind('endGuide',endGuide);bind('confirmOrigin',()=>go(journeyNext(state.stage,'located')));bind('enterBuilding',()=>go(journeyNext(state.stage,'entered')));bind('atFloor',()=>{if(p.floor&&$('#floorSelect')?.value!==p.floor){toast(t('请先核对目标楼层：','Check destination floor: ')+floor(p));return;}go(journeyNext(state.stage,'floorReached'));});bind('atDoor',()=>go(journeyNext(state.stage,'atDoor')));bind('previousClue',()=>state.stage===state.startStage?endGuide():go(Math.max(state.startStage,state.stage-1)));
+ bind('endGuide',endGuide);bind('confirmOrigin',()=>go(journeyNext(state.stage,'located')));bind('enterBuilding',()=>go(journeyNext(state.stage,'entered')));bind('atFloor',()=>go(journeyNext(state.stage,'floorReached')));bind('atDoor',()=>go(journeyNext(state.stage,'atDoor')));bind('previousClue',()=>state.stage===state.startStage?endGuide():go(Math.max(state.startStage,state.stage-1)));
  bind('changeJourneyOrigin',openOrigin);bind('locateScenario',()=>{if(!state.origin){openOrigin();return;}render();toast(t('模拟定位完成，请核对地图上的起点。没有读取真实 GPS。','Simulated fix ready. Check the origin pin. No real GPS was read.'));});
  bind('journeyReminder',e=>{state.reminders=e.target.checked;saveProgress();});
  bind('showIndoorClue',()=>{switchMap(true);setSheet(0);if(innerWidth>800)$('#indoorMap').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});});
