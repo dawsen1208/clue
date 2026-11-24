@@ -28,7 +28,7 @@ export function decorateScene({view,place,stage,saved,places,buildings,mode,en,o
  const complete=document.getElementById('finishGuide');if(complete&&!complete.dataset.closedHook){complete.dataset.closedHook='1';const destination=place;complete.addEventListener('click',()=>showCaseClosed({place:destination,building:(buildings.find(b=>b.id===destination.building)||{}).name||destination.building,en,onSave:()=>onSave?.(destination.id),onExplore,saved:saved.includes(destination.id)}));}
 }
 
-export function decorateAbout(en){
+export function decorateAbout(en,onReplayFinish){
  const about=document.getElementById('aboutPage');
  const heading=about.querySelector('.about-heading');
  const grid=about.querySelector('.about-grid');
@@ -49,7 +49,7 @@ export function decorateAbout(en){
  const notice=document.createElement('span');
  notice.textContent=en?'Opening animation follows your reduced-motion setting.':'开场动画会遵循系统的减少动态效果设置。';
  notice.id='replayMotionNotice';
- replay.onclick=()=>playEntrance({en,force:true});
+ replay.onclick=()=>playEntrance({en,onFinish:onReplayFinish});
  tools.append(replay,notice);
  heading.append(tools);
  updateReplayMotion();
@@ -64,15 +64,9 @@ function updateReplayMotion(){
 }
 reducedMotion.addEventListener('change',updateReplayMotion);
 let finishActive=null;
-export function playEntrance({en=false,force=false,onFinish=()=>{}}={}){
+export function playEntrance({en=false,onFinish=()=>{}}={}){
  const t=(zh,eng)=>en?eng:zh;
  if(reducedMotion.matches){onFinish();return;}
- if(!force){
-  try{
-   if(sessionStorage.getItem('clue:entered-v2')==='1'){onFinish();return;}
-   sessionStorage.setItem('clue:entered-v2','1');
-  }catch{}
- }
  finishActive?.();
  const dialog=document.createElement('dialog');
  dialog.className='opening-dialog';
