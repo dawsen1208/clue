@@ -1,0 +1,59 @@
+/* Clue · Simple: a deliberately plain comparison variant. */
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#f2f2f2;font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1d1d1f;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+.s-app{position:relative;display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;background:#fff;overflow:hidden}
+@media (min-width:520px){body{display:flex;align-items:center}.s-app{height:min(100dvh,880px);border-radius:28px;box-shadow:0 10px 40px #0002}}
+.s-map{position:relative;flex:1 1 auto;min-height:0;background:#e9e6df;touch-action:none;cursor:grab;overflow:hidden}
+.s-map:active{cursor:grabbing}
+.s-map svg{display:block;width:100%;height:100%}
+.s-pin circle{fill:#fff;stroke:#555;stroke-width:3}
+.s-pin text{font:700 15px system-ui,sans-serif;fill:#333;paint-order:stroke;stroke:#fff;stroke-width:4px}
+.s-pin.is-dest circle{fill:#e5322d;stroke:#fff;stroke-width:4}
+.s-pin.is-dest text{fill:#e5322d}
+.s-route{fill:none;stroke:#1a73e8;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.s-route-halo{fill:none;stroke:#fff;stroke-width:12;stroke-linecap:round;stroke-linejoin:round}
+.s-me-cone{fill:#1a73e8;opacity:.3}
+.s-me-dot{fill:#1a73e8;stroke:#fff;stroke-width:4}
+.s-me-arrow{fill:#fff}
+.s-me-ring{fill:#1a73e8;opacity:.12}
+.s-locate{position:absolute;right:12px;bottom:12px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;box-shadow:0 2px 8px #0003;display:grid;place-items:center;cursor:pointer}
+.s-locate svg{width:22px;height:22px}
+.s-results{position:absolute;left:12px;right:12px;bottom:8px;max-height:60%;overflow:auto;margin:0;padding:4px 0;list-style:none;background:#fff;border-radius:14px;box-shadow:0 4px 18px #0003}
+.s-results[hidden]{display:none}
+.s-results button{display:block;width:100%;padding:10px 14px;border:0;background:none;text-align:left;cursor:pointer}
+.s-results button:hover,.s-results button:focus-visible{background:#f1f3f4;outline:0}
+.s-results small{display:block;color:#666}
+.s-results .s-empty{padding:12px 14px;color:#666}
+.s-search{flex:none;padding:10px 12px;background:#fff;border-top:1px solid #e3e3e3}
+.s-search label{display:flex;align-items:center;gap:8px;height:46px;padding:0 14px;border-radius:23px;background:#f1f3f4}
+.s-search svg{flex:none;width:20px;height:20px;fill:none;stroke:#666;stroke-width:2.2}
+.s-search input{flex:1;min-width:0;border:0;background:none;outline:0;font-size:16px}
+.s-clear{border:0;background:none;color:#666;font-size:20px;cursor:pointer;padding:0 2px}
+.s-clear[hidden]{display:none}
+.s-panel{flex:none;background:#fff;border-top:1px solid #e3e3e3;padding-bottom:env(safe-area-inset-bottom)}
+.s-tabs{display:flex}
+.s-tabs button{flex:1;height:48px;border:0;background:none;color:#666;font-weight:600;font-size:14px;cursor:pointer;border-top:3px solid transparent}
+.s-tabs button[aria-selected="true"]{color:#1a73e8;border-top-color:#1a73e8}
+.s-body{max-height:0;overflow:auto;transition:max-height .25s ease}
+.s-panel.is-open .s-body{max-height:38dvh}
+.s-sec{padding:4px 16px 16px}
+.s-sec h2{margin:6px 0 2px;font-size:18px}
+.s-sec p{margin:4px 0;color:#444}
+.s-meta{color:#666;font-size:14px}
+.s-steps{margin:10px 0 0;padding-left:20px}
+.s-steps li{margin:6px 0}
+.s-list{list-style:none;margin:6px 0 0;padding:0}
+.s-list button{display:flex;justify-content:space-between;gap:8px;width:100%;padding:10px 0;border:0;border-bottom:1px solid #eee;background:none;text-align:left;cursor:pointer}
+.s-list small{color:#666;white-space:nowrap}
+.s-note{font-size:12px;color:#888;margin-top:10px}
+.s-plan svg{display:block;width:100%;margin-top:8px;background:#fafafa;border:1px solid #e3e3e3;border-radius:10px}
+.s-plan .plan-shell{fill:#fff;stroke:#999;stroke-width:2}
+.s-plan .plan-rooms rect{fill:#eee;stroke:#bbb}
+.s-plan .plan-corridor{stroke:#ddd;stroke-width:14;stroke-linecap:round}
+.s-plan .plan-origin{fill:#1a73e8}
+.s-plan .plan-thread{stroke:#1a73e8;stroke-width:4;stroke-dasharray:8 6}
+.s-plan .plan-target{fill:#e5322d}
+.s-plan text{font:600 12px system-ui,sans-serif;fill:#555}
+.s-plan figure{margin:0}
+.s-search input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
