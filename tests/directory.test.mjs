@@ -6,6 +6,14 @@ test('room aliases and building codes match without punctuation sensitivity',()=
  assert.equal(findPlaces(places,buildings,{query:'CPSC UG04'})[0].id,'computerUG04');
  assert.ok(findPlaces(places,buildings,{query:'R30'}).every(p=>p.building==='R30'));
 });
+test('the poster room is searchable by booking label and room number',()=>{
+ for(const query of ['148','Room 148','GSR 01','GSR01','148号房']){
+  const result=findPlaces(places,buildings,{query});
+  assert.deepEqual(result.map(({id,building,floor,source})=>[id,building,floor,source]),[
+   ['library148','R30','1','studyRooms']
+  ]);
+ }
+});
 test('unknown floors are not derived from room codes',()=>{
  for(const id of ['arts127','strathconaG19','computerUG04','poyntingS02']) assert.equal(places.find(p=>p.id===id).floor,null);
  assert.equal(floorName(null,true),'Floor to confirm');

@@ -4,6 +4,7 @@ export const sources={
  map:{name:'University campus map',url:'https://www.birmingham.ac.uk/contact/campus-map'},
  library:{name:'University Library facilities',url:'https://www.birmingham.ac.uk/libraries/our-libraries/main-library'},
  rooms:{name:'University Library room guide',url:'https://www.birmingham.ac.uk/libraries/using/accessibility/ml-training-accessibility'},
+ studyRooms:{name:'University Library group study room guide',url:'https://intranet.birmingham.ac.uk/student/libraries/studying/group-study-rooms.aspx'},
  tlb:{name:'AccessAble · Teaching and Learning Building',url:'https://www.accessable.co.uk/university-of-birmingham/access-guides/teaching-and-learning-building'},
  libraryAccess:{name:'AccessAble · Main Library',url:'https://www.accessable.co.uk/university-of-birmingham/access-guides/library'},
  arts:{name:'University teaching room directory',url:'https://conferences.bham.ac.uk/venues/lecture-theatres/'}
@@ -22,6 +23,7 @@ export const buildings=[
 ];
 export const places=[
  {id:'arts127',type:'room',building:'R16',name:'Lecture Room 3 · 127',zh:'Lecture Room 3 · 127',aliases:'ARTS-LR3 ARTS 127 文科 教室',floor:null,source:'arts',note:['房间名称有大学公开目录来源；楼层与具体入口尚待核实。','The university directory lists this room; floor and exact entrance need confirmation.']},
+ {id:'library148',type:'room',building:'R30',name:'Group Study Room 01 · 148',zh:'小组学习室 01 · 148',aliases:'Room 148 GSR 01 GSR01 GSR1 主图书馆 148房间 148号房',floor:'1',source:'studyRooms',note:['伯明翰大学图书馆指南将 GSR 01（148 室）列在 First Floor。室内路线为演示示意。','The University Library guide lists GSR 01 (Room 148) on the first floor. Indoor directions are illustrative.']},
  {id:'library404',type:'room',building:'R30',name:'Training Room 1 · 404',zh:'培训教室 1 · 404',aliases:'training library 404 教室 图书馆',floor:'4',source:'rooms',note:['大学指南将此房间列于 Fourth Floor。请以现场楼层标识为准。','The university guide places this room on the fourth floor. Follow the building’s floor labels.']},
  {id:'library403',type:'room',building:'R30',name:'Training Room 2 · 403',zh:'培训教室 2 · 403',aliases:'training library 403 教室 图书馆',floor:'4',source:'rooms',note:['大学指南将此房间列于 Fourth Floor。','Listed on the fourth floor in the university guide.']},
  {id:'library143',type:'room',building:'R30',name:'Academic Skills Centre · 143',zh:'学术技能中心 · 143',aliases:'library 143 skills 教室 图书馆',floor:'1',source:'rooms',note:['公开指南注明 First Floor；不是通过房间号码推测楼层。','The guide states first floor; the floor is not inferred from the room number.']},
