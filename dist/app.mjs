@@ -13,6 +13,8 @@ import {originPoints,initialGuideStage,walkingRoute,accessMatch,closestToilet} f
 import {locateRouteMap} from './map-first.mjs?v=locate-map';
 import {buildingPhotos} from './building-photos.mjs?v=20261124-2';
 import {guestAccount,saveGuest} from './guest-account.mjs';
+import {setupProactive} from './proactive.mjs?v=1';
+let proactive=null;
 const en=document.documentElement.lang==='en',t=(zh,eng)=>en?eng:zh,$=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),name=p=>en?p.name:p.zh;
 const paths={search:'<circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/>',room:'<path d="M5 21V3h14v18M3 21h18M9 7h6m-6 4h6m0 5h.1"/>',toilet:'<circle cx="8" cy="4" r="1.5"/><circle cx="17" cy="4" r="1.5"/><path d="M5 9h6l1 6H4l1-6Zm1 6v6m4-6v6m5-12h4v7h-4V9Zm1 7v5m2-5v5"/>',pin:'<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',bookmark:'<path d="M6 3h12v19l-6-4-6 4V3Z"/>',arrow:'<path d="M4 12h15m-6-6 6 6-6 6"/>',check:'<path d="m5 12 5 5L20 6"/>',close:'<path d="m6 6 12 12M18 6 6 18"/>',locate:'<circle cx="12" cy="12" r="6"/><path d="M12 1v5m0 12v5M1 12h5m12 0h5"/>',bell:'<path d="M6 9a6 6 0 0 1 12 0v6l2 3H4l2-3V9Zm4 12h4"/>',steps:'<path d="M3 20h5v-5h5v-5h5V5h4"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-11v1"/>'};
 const icon=i=>`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[i]||paths.pin}</svg>`;
@@ -56,7 +58,7 @@ function startJourney(p){
  if(!state.origin){state.pendingPlace=p.id;openOrigin();return;}
  if(!allowed(p)){toast(t('此起点没有符合条件的演示无台阶路线。','No matching step-free demo route from this origin.'));return;}
  state.guide=p;state.stage=initialGuideStage(state.origin,p,demo());state.startStage=state.stage;
- state.muted=false;state.recovery=false;state.pendingPlace=null;
+ state.muted=false;state.recovery=false;state.pendingPlace=null;proactive?.reset();
  location.hash='/guide/'+p.id;render();switchMap(demo()?state.stage>=3:state.stage>0);setSheet(1);requestAnimationFrame(()=>focusDestination(bOf(p)));
 }
 function openOrigin(){
@@ -201,7 +203,7 @@ function renderBuildingPreview(){
  fillBuildingPreview(building);
 }
 function stopTimers(){clearTimeout(state.timer);clearTimeout(state.snooze);state.timer=null;state.snooze=null;}
-function queuePrompt(ms){clearTimeout(state.timer);state.timer=setTimeout(()=>{if(state.guide&&state.stage===1&&!state.muted&&demo())showPrompt();},ms);}
+function queuePrompt(ms){clearTimeout(state.timer);state.timer=setTimeout(()=>{if(state.guide&&state.stage===1&&!state.muted&&demo()&&!proactive?.active())showPrompt();},ms);}
 function showPrompt(){if(!state.guide||state.muted)return;const p=state.guide;$('#arrivalPrompt').hidden=false;$('#arrivalPrompt').innerHTML=`<div class="prompt-mark">${icon('bell')}</div><div><p class="eyebrow">${t('新线索 · 模拟位置事件','NEW CLUE · SIMULATED LOCATION EVENT')}</p><h2>${t('快到这栋楼了。','The building is just ahead.')}</h2><p>${esc(name(bOf(p)))} · ${t('接下来找','Next, find')} ${esc(floor(p))}</p><p class="small">${t('这是一条主动提醒的情境演示，没有读取真实位置。','A proactive prompt scenario; no real device location was read.')}</p><div class="prompt-actions"><button id="promptGo" class="primary">${t('已核对入口，展开楼层线索','Entrance checked. Open floor clue')}</button><button id="promptSnooze" class="text-button">${t('稍后 5 分钟','Snooze 5 min')}</button><button id="promptMute" class="text-button">${t('本次静音','Mute this case')}</button></div></div>`;$('#promptGo').onclick=()=>{stopTimers();state.stage=2;$('#arrivalPrompt').hidden=true;refreshGuideOnly();};$('#promptSnooze').onclick=()=>{$('#arrivalPrompt').hidden=true;state.snooze=setTimeout(()=>{if(state.guide&&state.stage===1&&!state.muted)showPrompt();},300000);toast(t('本次演示提醒已稍后处理，可随时继续。','Prompt snoozed. Continue whenever ready.'));};$('#promptMute').onclick=()=>{state.muted=true;stopTimers();$('#arrivalPrompt').hidden=true;refreshGuideOnly();};}
 function renderSourceGuide(){const p=state.guide,b=bOf(p);$('#guidePane').innerHTML=`<div class="detail-toolbar"><button id="endGuide" class="text-button">← ${t('返回线索','Back to clues')}</button></div><h2 class="place-title">${esc(name(p))}</h2><p class="building-line">${esc(name(b))} · ${esc(floor(p))}</p><div class="stepper">${[t('到建筑','Building'),t('找楼层','Floor'),t('到地点','Place')].map((s,i)=>`<span class="${state.stage===i?'current':state.stage>i?'done':''}"><b>${state.stage>i?'✓':'0'+(i+1)}</b>${s}</span>`).join('')}</div><div class="route-instruction"><p class="eyebrow">${demo()?t('情境导航','SCENARIO GUIDANCE'):t('资料引导','SOURCE GUIDANCE')} / 0${state.stage+1}</p><h3>${state.stage===0?t('先循着线索，找到这栋楼。','First clue: the right building.'):state.stage===1?t('下一条线索，在这一层。','Next clue: the right floor.'):t('最后，核对这块门牌。','Last clue: the right door.')}</h3>${state.stage===0?`${buildingPhotos[b.id]?sitePhoto(b):''}<div class="route-ticket"><span>${icon('pin')}${esc(state.origin?name(state.origin):'Green Heart')}</span><span class="ticket-thread">↓</span><strong>${esc(b.id+' · '+name(b))}</strong><small>${demo()?esc(distanceText(p))+' · '+t('演示预计','scenario estimate'):t('参照校园地图查找建筑','Locate the building on the campus map')}</small></div><p>${demo()?t('红线展示假设导航服务返回的示例连接。到楼时，系统会将重点切换到楼层与房间。','The red thread represents an assumed navigation service’s example path. On approach, the focus shifts to the floor and room.'):t('仅显示近似建筑点位，不生成未经核验的路线。','Approximate building points only; no unverified path is generated.')}</p><button id="enterBuilding" class="primary full">${t('进入建筑','Enter the building')}${demo()?t('（演示）',' (demo)'):''}${icon('arrow')}</button>${demo()?`<div class="guide-controls"><button id="replayPrompt" class="text-button">${icon('bell')}${t('播放到楼提醒','Play approach prompt')}</button><button id="muteGuide" class="text-button">${state.muted?t('恢复提醒','Resume prompts'):t('暂停提醒','Pause prompts')}</button></div>`:''}`:state.stage===1?`<div class="floor-ticket compact"><span>${t('目标楼层','DESTINATION FLOOR')}</span><strong>${esc(floor(p))}</strong><small>${esc(label(p))}</small></div><p>${demo()?t('楼层图将电梯、楼梯和目的地点放在一起。选择通行偏好，路线随之调整。','The floor sketch connects the lift, stairs and destination. Choose an access preference to adapt the concept path.'):t('请按有来源的楼层信息与现场标识查找；未知楼层需现场确认。','Use the sourced floor and on-site signs; confirm unknown floors locally.')}</p>${demo()?`<label class="step-free-choice"><input id="stepFree" type="checkbox" ${state.stepFree?'checked':''}>${t('优先电梯与无台阶路径（演示）','Prefer lift and step-free path (demo)')}</label>`:''}<button id="atFloor" class="primary full">${t('到达楼层，继续找地点','At the floor. Find the place')}${icon('arrow')}</button>`:`<div class="found-ticket">${icon(p.type)}<span>${esc(floor(p))}</span><strong>${esc(name(p))}</strong><small>${t('建筑 → 楼层 → 地点','BUILDING → FLOOR → PLACE')}</small></div><p>${demo()?t('用房间号和门牌作最后一次确认。校园地图里的一个点，现在有了具体的去处。','Check the room code and door sign one last time. A point on the campus map becomes a place to arrive at.'):esc(p.note[en?1:0])}</p><button id="finishGuide" class="primary full">${icon('check')}${t('找到了，结案。','Found it. Case closed.')}</button><button id="leaveFeedback" class="text-button feedback-link">${t('留下一条反馈线索','Leave a feedback clue')}</button>`}</div>`;
  setupBuildingPhotos($('#guidePane'));
@@ -402,6 +404,16 @@ if(!state.selected&&!state.guide&&state.view==='find'){
  let seenOpening=false;try{seenOpening=localStorage.getItem('clue:opening-seen')==='1';localStorage.setItem('clue:opening-seen','1');}catch{}
  if(seenOpening)showScopeNote();else playEntrance({en,onFinish:showScopeNote});
 }
+// Proactive clues for demonstrations: simulated clock and position, real location when on campus.
+proactive=setupProactive({en,esc,icon,toast,
+ getGuide:()=>demo()?state.guide:null,getStage:()=>state.stage,isMuted:()=>state.muted,
+ route:p=>demoRoute(p),building:p=>bOf(p),place:id=>byId(id),placeName:p=>name(p),floorLabel:p=>floor(p),
+ minutes:p=>walkMinutes(metres(p)||0,p.floor),photo:id=>buildingPhotos[id]?.[0],
+ svg:()=>$('#campusMap'),prompt:$('#arrivalPrompt'),
+ startGuide:p=>{if(!allowed(p))return;state.selected=p;startJourney(p);},
+ setStage:stage=>{stopTimers();state.stage=stage;state.recovery=false;refreshGuideOnly();},
+ recover:()=>{state.recovery=true;refreshGuideOnly();},
+ rerouteFrom:point=>chooseOrigin(point)});
 function showScopeNote(){
  try{if(sessionStorage.getItem('clue:scope-note')==='closed')return;}catch{}
  if($('#scopeNote'))return;
