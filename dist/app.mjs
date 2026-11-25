@@ -393,7 +393,9 @@ window.addEventListener('hashchange',route);window.addEventListener('pagehide',s
 if(!state.selected&&!state.guide&&state.view==='find'){
  $('#exploreMap').click();
  syncControls();
- showScopeNote();
+ // Opening plays on the first visit only; afterwards the map comes first.
+ let seenOpening=false;try{seenOpening=localStorage.getItem('clue:opening-seen')==='1';localStorage.setItem('clue:opening-seen','1');}catch{}
+ if(seenOpening)showScopeNote();else playEntrance({en,onFinish:showScopeNote});
 }
 function showScopeNote(){
  try{if(sessionStorage.getItem('clue:scope-note')==='closed')return;}catch{}
