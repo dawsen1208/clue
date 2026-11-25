@@ -1,7 +1,7 @@
 import {setupNarration} from './narration.mjs?v=locate-map';
 import {setupFeedback} from './feedback.mjs?v=map-first-1';
 import {progressKey,trailDraft,readDraft} from './progress.mjs?v=map-first-1';
-import {setupExperience,refreshExperience,enhanceIndoor,mountFloorExplorer,focusGuide,setSheet} from './experience.mjs?v=floor-sheet';
+import {setupExperience,refreshExperience,enhanceIndoor,mountFloorExplorer,focusGuide,setSheet} from './experience.mjs?v=review-1';
 import {journeyMarkup,journeyNext,journeySteps} from './visual-journey.mjs?v=floor-sheet';
 import {places,sources,checked} from './data.mjs?v=room-148';
 import {findPlaces,floorName,distance,mapToGeo,geoToMap,inCampus} from './core.mjs';
@@ -21,7 +21,7 @@ const guest=guestAccount(browserStorage);
 let saved=[...guest.saved];
 saveGuest(browserStorage,guest);
 let initialMode='concept';try{initialMode=sessionStorage.getItem('clue:mode')==='evidence'?'evidence':'concept';}catch{}
-const state={period:'7',mode:initialMode,query:'',category:'all',accessible:false,neutral:false,origin:null,selected:null,guide:null,stage:0,view:'find',pick:false,reminders:true,muted:false,timer:null,snooze:null,stepFree:false,building:null,pendingPlace:null,startStage:0,recommended:false};
+const state={period:'7',mode:initialMode,query:'',category:'all',accessible:false,neutral:false,origin:originPoints.find(o=>o.id==='green')||null,selected:null,guide:null,stage:0,view:'find',pick:false,reminders:true,muted:false,timer:null,snooze:null,stepFree:false,building:null,pendingPlace:null,startStage:0,recommended:false};
 const demoDirectory=withSampleDestinations(places,originPoints);
 const demo=()=>isDemo(state.mode),directory=()=>demo()?demoDirectory:places,bOf=p=>originPoints.find(b=>b.id===p.building),floor=p=>floorName(p.floor,en),byId=id=>directory().find(p=>p.id===id),metres=p=>state.origin?distance(state.origin,bOf(p)):null;
 document.title=t('Clue · 校园里的每一处','Clue · Find your place');
@@ -57,7 +57,7 @@ function startJourney(p){
  if(!allowed(p)){toast(t('此起点没有符合条件的演示无台阶路线。','No matching step-free demo route from this origin.'));return;}
  state.guide=p;state.stage=initialGuideStage(state.origin,p,demo());state.startStage=state.stage;
  state.muted=false;state.recovery=false;state.pendingPlace=null;
- location.hash='/guide/'+p.id;render();switchMap(demo()?state.stage>=3:state.stage>0);setSheet(2);
+ location.hash='/guide/'+p.id;render();switchMap(demo()?state.stage>=3:state.stage>0);setSheet(1);requestAnimationFrame(()=>focusDestination(bOf(p)));
 }
 function openOrigin(){
  if(state.pick)setMapOriginPicking(false);
@@ -115,8 +115,9 @@ function syncControls(){
  if(route){
   route.classList.toggle('start-needed',!state.origin);
   $('#boardPage').classList.toggle('start-needed',!state.origin&&state.view==='find'&&!state.selected&&!state.guide);
-  $('#routeStartStep').textContent=state.origin?t('第 2 步 · 选目的地','Step 2 · Choose a destination'):t('第 1 步 · 先选出发点','Step 1 · Choose your starting point');
-  $('#routeStepNumber').textContent=state.origin?'02':'01';
+  const chosen=state.guide||state.selected;
+  $('#routeStartStep').textContent=chosen?(state.guide?t('第 3 步 · 跟着线索走：','Step 3 · Follow the clues: '):t('第 3 步 · 确认目的地：','Step 3 · Check your destination: '))+name(chosen):state.origin?t('第 2 步 · 选目的地','Step 2 · Choose a destination'):t('第 1 步 · 先选出发点','Step 1 · Choose your starting point');
+  $('#routeStepNumber').textContent=chosen?'03':state.origin?'02':'01';
   $('#routeOriginButton').textContent=t('从名单选','Choose from list');
   $('#routeMapOriginButton').textContent=state.pick?t('取消选点','Cancel map selection'):state.origin?t('在地图上更换','Change on map'):t('在地图上选起点','Choose start on map');
   $('#routeMapOriginButton').setAttribute('aria-pressed',String(state.pick));
@@ -127,7 +128,7 @@ function syncControls(){
   $('#routeDestinationHint').textContent=t('点地图上的建筑选地点，或直接找最近的厕所。','Tap a building to pick a place, or find the nearest toilet.');
  }
  const nav=$('[data-nav="find"]');
- if(nav)nav.textContent=document.body.classList.contains('map-overview')?t('地图总览','Map overview'):t('推荐','Recommended');
+ if(nav)nav.textContent=t('地图','Map');
 }
 function setMapOriginPicking(active){
  state.pick=active;
@@ -226,7 +227,19 @@ function renderGuide(){
 
 function endGuide(){saveProgress();stopTimers();state.guide=null;$('#arrivalPrompt').hidden=true;location.hash='/place/'+state.selected.id;render();switchMap(false);}
 function resetExplorer(){stopTimers();state.guide=null;state.selected=null;state.query='';state.category='all';state.accessible=false;state.neutral=false;state.building=null;state.recommended=true;state.view='find';$('#search').value='';$('#accessible').checked=false;$('#neutral').checked=false;$('#arrivalPrompt').hidden=true;location.hash='/find';render();switchMap(false);showExplorerList();setSheet(1);$('.case-file').scrollTop=0;}
-function focusDestination(building){tweenMap(svg,[786,47,946,1037],next=>{box=next;setBox();});}
+function revealResults(){if(!matchMedia('(min-width:801px)').matches)return;requestAnimationFrame(()=>{const first=$('#results')?.firstElementChild;first?.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});}
+function focusDestination(building){
+ const pts=[building,state.origin].filter(p=>p&&Number.isFinite(p.x));
+ if(!pts.length){tweenMap(svg,[786,47,946,1037],next=>{box=next;setBox();});return;}
+ const r=svg.getBoundingClientRect(),a=r.width>0?r.height/r.width:1,xs=pts.map(p=>p.x),ys=pts.map(p=>p.y),pad=150;
+ let w=Math.max(Math.max(...xs)-Math.min(...xs)+pad*2,420),h=Math.max(Math.max(...ys)-Math.min(...ys)+pad*2,420*a);
+ if(h/w>a)w=h/a;else h=w*a;
+ w=Math.min(w,946);h=Math.min(h,1037);
+ const cx=(Math.min(...xs)+Math.max(...xs))/2,cy=(Math.min(...ys)+Math.max(...ys))/2;
+ const lift=matchMedia('(max-width:800px)').matches?0.3:0.5; // phones: keep the pair above the bottom sheet
+ const x=Math.max(786,Math.min(786+946-w,cx-w/2)),y=Math.max(47,Math.min(47+1037-h,cy-h*lift));
+ tweenMap(svg,[x,y,w,h],next=>{box=next;setBox();});
+}
 function openPlace(id,source='list'){
  const p=byId(id);if(!p)return;
  if(!state.origin){state.pendingPlace=id;openOrigin();return;}
@@ -235,6 +248,7 @@ function openPlace(id,source='list'){
  traceSelection({place:p,building:bOf(p),en,source});stopTimers();state.guide=null;state.selected=p;
  $('#arrivalPrompt').hidden=true;$('#boardPage').classList.remove('mobile-map-open');mobileMapLabel(false);
  location.hash='/place/'+id;render();switchMap(false);setSheet(2);$('.case-file').scrollTop=0;
+ requestAnimationFrame(()=>focusDestination(bOf(p)));
 }
 function showBuilding(id){
  const point=mapRow(id);if(!point)return;
@@ -274,7 +288,7 @@ function renderMap(){
 function renderIndoorBase(){const p=state.guide||state.selected;if(!p){$('#indoorMap').innerHTML=`<div class="indoor-empty"><span class="handwritten">${t('先找到一条线索。','Start with a little clue.')}</span><p>${t('选择教室或厕所，展开它的楼层档案。','Select a room or toilet to open its floor file.')}</p><button id="indoorExample" class="outline">${t('打开教室 404','Open Room 404')}${icon('arrow')}</button></div>`;$('#indoorExample').onclick=()=>openPlace('library404');return;}if(!demo()){$('#indoorMap').innerHTML=`<div class="indoor-empty"><p class="eyebrow">SOURCE VIEW</p><h3>${esc(floor(p))}</h3><p>${t('资料查看模式不显示假设室内图。','Source view does not display an assumed indoor plan.')}</p>${sourceInfo(p)}</div>`;return;}const viaLift=state.stepFree;$('#indoorMap').innerHTML=`<div class="indoor-label"><span>${esc(bOf(p).name)}</span><strong>${esc(floor(p))}</strong><small>${t('示意楼层图 · 非真实建筑平面图','ILLUSTRATIVE FLOOR PLAN · NOT AN ACTUAL BUILDING PLAN')}</small></div><svg class="floor-sketch" viewBox="0 0 660 380" role="img" aria-label="${esc(t('演示室内图：入口、电梯、楼梯及目标地点','Scenario indoor sketch: entrance, lift, stairs and destination'))}"><defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0v8" stroke="#b7b19d" stroke-width="1"/></pattern></defs><path class="floor-shell" d="M70 75H590V315H70Z"/><path class="room-shape" d="M70 75H200V175H70ZM220 75H365V175H220ZM385 75H590V175H385ZM70 225H200V315H70ZM220 225H365V315H220ZM385 225H590V315H385Z"/><path class="indoor-path" d="${viaLift?'M130 275V205H445V125':'M290 275V205H445V125'}"/><rect class="target-room" x="385" y="75" width="205" height="100"/><text x="489" y="113" class="room-target-text" text-anchor="middle">${esc(p.type==='room'?p.name.split('·').at(-1).trim():t('厕所','TOILET'))}</text><text x="489" y="143" text-anchor="middle">${t('目标地点','DESTINATION')}</text><text x="130" y="265" text-anchor="middle">${t('电梯','LIFT')}</text><text x="290" y="265" text-anchor="middle">${t('楼梯','STAIRS')}</text><text x="130" y="125" text-anchor="middle">${t('示例房间','ROOM A')}</text><text x="290" y="125" text-anchor="middle">${t('示例房间','ROOM B')}</text><text x="489" y="275" text-anchor="middle">${t('示例房间','ROOM C')}</text><text x="400" y="198" class="indoor-sign-label">${t('转角指示牌 →','Direction sign →')}</text><text x="${viaLift?130:290}" y="302" text-anchor="middle" class="indoor-current-label">${t('本层参考位置','Floor reference point')}</text><circle class="indoor-start" cx="${viaLift?130:290}" cy="275" r="7"/><circle class="indoor-destination" cx="445" cy="125" r="7"/></svg><div class="indoor-caption"><span class="red-pin"></span><span>${viaLift?t('演示路径经过电梯','Scenario path uses the lift'):t('演示路径经过楼梯','Scenario path uses the stairs')} · ${t('用于讨论导航界面，不用于实际找路','For testing the interface, not finding a real room')}</span></div>`;}
 function renderIndoor(){renderIndoorBase();enhanceIndoor({p:state.guide||state.selected,en,demo:demo(),stepFree:state.stepFree});}
 function switchMap(inside){$('.case-workspace').classList.toggle('inside-view',inside);$('#outdoorMap').hidden=false;$('#indoorMap').hidden=!inside;$('#indoorTab').classList.toggle('active',inside);$('#outdoorTab').classList.toggle('active',!inside);if(inside)renderIndoor();animateMapStage(inside);}
-$('#outdoorTab').onclick=()=>switchMap(false);$('#indoorTab').onclick=()=>{if(demo()&&state.guide&&state.stage===2){setSheet(2);focusGuide();return;}switchMap(true);};$('#pickOrigin').onclick=()=>{state.pick=!state.pick;switchMap(false);renderMap();};$('#exampleRoom').onclick=()=>openPlace('library148');$('#search').oninput=e=>{state.building=null;state.query=e.target.value;render();if(state.query.trim())setSheet(2);};$('#searchForm').onsubmit=e=>{e.preventDefault();state.building=null;state.query=$('#search').value;render();setSheet(2);};document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{state.building=null;state.category=b.dataset.category;if(state.category!=='toilet'){state.accessible=false;state.neutral=false;$('#accessible').checked=false;$('#neutral').checked=false;}render();});$('#accessible').onchange=e=>{state.accessible=e.target.checked;render();};$('#neutral').onchange=e=>{state.neutral=e.target.checked;render();};$('#changeOrigin').onclick=openOrigin;$('#setOrigin').onclick=()=>{const point=mapRow($('#originSelect').value);if(!point){$('#originSelect').reportValidity();return;}state.stepFree=$('#originStepFree').checked;$('#originDialog').close();chooseOrigin(point);};
+$('#outdoorTab').onclick=()=>switchMap(false);$('#indoorTab').onclick=()=>{if(demo()&&state.guide&&state.stage===2){setSheet(2);focusGuide();return;}switchMap(true);};$('#pickOrigin').onclick=()=>{state.pick=!state.pick;switchMap(false);renderMap();};$('#exampleRoom').onclick=()=>openPlace('library148');$('#search').oninput=e=>{state.building=null;state.query=e.target.value;render();if(state.query.trim()){setSheet(2);revealResults();}};$('#searchForm').onsubmit=e=>{e.preventDefault();state.building=null;state.query=$('#search').value;render();setSheet(2);};document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{state.building=null;state.category=b.dataset.category;if(state.category!=='toilet'){state.accessible=false;state.neutral=false;$('#accessible').checked=false;$('#neutral').checked=false;}render();});$('#accessible').onchange=e=>{state.accessible=e.target.checked;render();};$('#neutral').onchange=e=>{state.neutral=e.target.checked;render();};$('#changeOrigin').onclick=openOrigin;$('#setOrigin').onclick=()=>{const point=mapRow($('#originSelect').value);if(!point){$('#originSelect').reportValidity();return;}state.stepFree=$('#originStepFree').checked;$('#originDialog').close();chooseOrigin(point);};
 const scopeDialog=$('#scopeDialog');
 const scopeClose=scopeDialog.querySelector('[data-close]');
 const scopeAccept=$('#acceptScope');
@@ -379,5 +393,14 @@ window.addEventListener('hashchange',route);window.addEventListener('pagehide',s
 if(!state.selected&&!state.guide&&state.view==='find'){
  $('#exploreMap').click();
  syncControls();
- playEntrance({en,onFinish:openOpeningScope});
+ showScopeNote();
+}
+function showScopeNote(){
+ try{if(sessionStorage.getItem('clue:scope-note')==='closed')return;}catch{}
+ if($('#scopeNote'))return;
+ const note=document.createElement('div');note.id='scopeNote';note.className='scope-note';note.setAttribute('role','note');
+ note.innerHTML=`<span>${t('设计演示：起点、路线和楼层图都是示意。','Design demo: your start, routes and floor plans are illustrative.')}</span><button type="button" class="text-button" id="scopeNoteMore">${t('哪些是真实的？','What is real?')}</button><button type="button" class="scope-note-close" aria-label="${t('关闭提示','Dismiss note')}">×</button>`;
+ $('.explorer-toolbar').append(note);
+ $('#scopeNoteMore').onclick=openScope;
+ note.querySelector('.scope-note-close').onclick=()=>{note.remove();try{sessionStorage.setItem('clue:scope-note','closed');}catch{}};
 }

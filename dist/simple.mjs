@@ -1,7 +1,7 @@
 // Clue · Simple — a plain comparison variant of the main prototype.
 // Same directory, same campus map, same walking network; no extra features.
 import {places} from './data.mjs?v=room-148';
-import {findPlaces,floorName} from './core.mjs';
+import {findPlaces,floorName,distance} from './core.mjs';
 import {withSampleDestinations,scenarioOrigin,walkMinutes} from './concept.mjs?v=start-first';
 import {originPoints,walkingRoute} from './campus-routing.mjs?v=start-first';
 import {floorPlan,escapeText as e} from './map-first.mjs?v=locate-map';
@@ -10,7 +10,7 @@ import {buildings} from './data.mjs?v=room-148';
 const directory=withSampleDestinations(places,originPoints);
 const CROP={x:786,y:47,w:946,h:1037};          // same crop as the main map (legend excluded)
 const METRES_PER_UNIT=1.45;                    // from the map↔geo alignment in core.mjs
-const me={...scenarioOrigin};                  // simulated position, as in the main prototype
+const me={...(originPoints.find(o=>o.id==='green')||scenarioOrigin)}; // same default start as the main prototype
 const state={dest:null,route:null,tab:'directions',open:false,heading:35,compass:false};
 const view={x:0,y:0,w:420};
 const bOf=p=>originPoints.find(b=>b.id===p.building);
@@ -153,13 +153,15 @@ function trim(route){
  return d(a,c)<d(b,c)?{...route,points:[a,...route.points.slice(2)]}:route;
 }
 function metres(){return Math.round((state.route?.length||0)*METRES_PER_UNIT);}
+// Minutes use the main prototype's formula (straight-line distance), so both versions agree.
+const minutes=p=>walkMinutes(distance(me,bOf(p)),p.floor);
 function renderPanel(){
  panel.classList.toggle('is-open',state.open);
  panel.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===state.tab)));
  const p=state.dest,b=p&&bOf(p);
  if(state.tab==='directions'){
-  body.innerHTML=p?`<div class="s-sec"><h2>${e(p.name)}</h2><p class="s-meta">${e(b.name)} · ${e(floorName(p.floor,true))} · about ${walkMinutes(metres(),p.floor)} min</p>
-   <ol class="s-steps"><li>Walk about ${metres()} m to <strong>${e(b.name)}</strong> (follow the blue line).</li>
+  body.innerHTML=p?`<div class="s-sec"><h2>${e(p.name)}</h2><p class="s-meta">${e(b.name)} · ${e(floorName(p.floor,true))} · about ${minutes(p)} min</p>
+   <ol class="s-steps"><li>Walk to <strong>${e(b.name)}</strong>, following the blue line.</li>
    <li>Go in and take the stairs or lift to <strong>${e(floorName(p.floor,true))}</strong>.</li>
    <li>Follow the room signs to <strong>${e(p.name)}</strong>.</li></ol>
    <p class="s-note">Prototype: your position (Green Heart) and the route are simulated.</p></div>`
@@ -170,7 +172,7 @@ function renderPanel(){
   :`<div class="s-sec"><p>Choose a destination to see its floor.</p></div>`;
  }else{
   const list=directory.filter(x=>x.type==='toilet'&&!x.sample).map(x=>({x,r:walkingRoute(me,bOf(x))})).filter(o=>o.r).sort((a,c)=>a.r.length-c.r.length).slice(0,6);
-  body.innerHTML=`<div class="s-sec"><p class="s-meta">Nearest toilets</p><ul class="s-list">${list.map(({x,r})=>`<li><button type="button" data-id="${e(x.id)}"><span>${e(x.name)}<br><small>${e(bOf(x).name)}</small></span><small>${Math.round(r.length*METRES_PER_UNIT)} m</small></button></li>`).join('')}</ul></div>`;
+  body.innerHTML=`<div class="s-sec"><p class="s-meta">Nearest toilets</p><ul class="s-list">${list.map(({x,r})=>`<li><button type="button" data-id="${e(x.id)}"><span>${e(x.name)}<br><small>${e(bOf(x).name)}</small></span><small>~${minutes(x)} min</small></button></li>`).join('')}</ul></div>`;
  }
  requestAnimationFrame(applyView);
 }
