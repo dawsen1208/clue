@@ -57,3 +57,5 @@ button,input{font:inherit;color:inherit}
 .s-plan text{font:600 12px system-ui,sans-serif;fill:#555}
 .s-plan figure{margin:0}
 .s-search input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+.s-from{display:flex;align-items:center;gap:8px;margin:6px 0 4px;color:#666;font-size:14px}
+.s-from select{flex:1;min-width:0;height:40px;padding:0 10px;border:1px solid #ddd;border-radius:10px;background:#fff;font-size:15px;color:#1d1d1f}

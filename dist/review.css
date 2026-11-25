@@ -20,3 +20,4 @@
 }
 @media(max-width:800px){.scope-note{font-size:.78rem}.scope-note .text-button{font-size:.78rem;min-height:28px}}
 .has-case .scope-note,.inside-view .scope-note{display:none}
+#guideOriginRow{margin:6px 0 10px}

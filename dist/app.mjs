@@ -72,10 +72,12 @@ function chooseOrigin(origin){
   const p=state.guide;
   if(!allowed(p)){clearProgress();stopTimers();$('#arrivalPrompt').hidden=true;state.guide=null;state.selected=null;state.view='find';location.hash='/find';render();switchMap(false);return;}
   state.stage=initialGuideStage(state.origin,p,demo());state.startStage=state.stage;
+  toast(t('起点已更换为 ','Start changed to ')+name(origin)+t('，路线已重新规划。','. Directions restart from there.'));
  }
  const pending=state.pendingPlace;state.pendingPlace=null;
  if(pending){const p=byId(pending);if(p&&allowed(p)){openPlace(p.id);return;}toast(t('此起点没有符合条件的演示无台阶路线。','No matching step-free demo route from this origin.'));}
  render();if(state.guide)switchMap(demo()?state.stage>=3:state.stage>0);
+ const target=state.guide||state.selected;if(target)requestAnimationFrame(()=>focusDestination(bOf(target)));
 }
 function nearestToilet(){
  if(!state.origin){openOrigin();return;}
@@ -216,6 +218,9 @@ function renderGuide(){
  const go=stage=>{stopTimers();state.stage=stage;state.recovery=false;$('#arrivalPrompt').hidden=true;refreshGuideOnly();if(stage===1&&state.reminders&&!state.muted)queuePrompt(8000);};
  const bind=(id,fn)=>$('#'+id)?.addEventListener('click',fn);
  bind('endGuide',endGuide);bind('confirmOrigin',()=>go(journeyNext(state.stage,'located')));bind('enterBuilding',()=>go(journeyNext(state.stage,'entered')));bind('atFloor',()=>go(journeyNext(state.stage,'floorReached')));bind('atDoor',()=>go(journeyNext(state.stage,'atDoor')));bind('previousClue',()=>state.stage===state.startStage?endGuide():go(Math.max(state.startStage,state.stage-1)));
+ // Start point stays changeable at every stage of the guidance (it restarts the trail from the new start).
+ if(!$('#guideOriginRow')){const row=document.createElement('div');row.id='guideOriginRow';row.className='detail-route-origin guide-origin-row';row.innerHTML=`<span>${t('出发点','Start')}: <strong>${esc(name(origin))}</strong></span><button type="button" id="changeGuideOrigin" class="text-button">${t('更换起点','Change start')}</button>`;const steps=$('#guidePane .journey-progress');if(steps)steps.before(row);else $('#guidePane').prepend(row);}
+ bind('changeGuideOrigin',openOrigin);
  bind('changeJourneyOrigin',openOrigin);bind('locateScenario',()=>{if(!state.origin){openOrigin();return;}render();toast(t('模拟定位完成，请核对地图上的起点。没有读取真实 GPS。','Simulated fix ready. Check the origin pin. No real GPS was read.'));});
  bind('journeyReminder',e=>{state.reminders=e.target.checked;saveProgress();});
  bind('showIndoorClue',()=>{switchMap(true);setSheet(0);if(innerWidth>800)$('#indoorMap').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});});
@@ -252,7 +257,7 @@ function openPlace(id,source='list'){
 }
 function showBuilding(id){
  const point=mapRow(id);if(!point)return;
- if(state.guide&&!state.pick){toast(t('请先退出当前导航。','Exit current directions first.'));return;}
+ if(state.guide&&!state.pick){toast(t('导航进行中：要换起点，请点“更换起点”。','Directions are running. To use a different start, tap “Change start”.'));return;}
  if(!state.origin||state.pick||point.kind==='landmark'){chooseOrigin(point);if(!state.selected&&!state.guide)goOverview();return;}
  state.view='find';state.selected=null;state.building=id;
  state.query='';state.recommended=false;$('#search').value='';

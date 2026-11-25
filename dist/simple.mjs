@@ -152,6 +152,16 @@ function trim(route){
  const [a,b,c]=route.points,d=(u,v)=>Math.hypot(u.x-v.x,u.y-v.y);
  return d(a,c)<d(b,c)?{...route,points:[a,...route.points.slice(2)]}:route;
 }
+const startChoices=[...originPoints.filter(o=>o.kind==='landmark'),...buildings.map(b=>originPoints.find(o=>o.id===b.id))].filter(Boolean);
+function startPicker(){return `<label class="s-from">From <select id="fromSelect" aria-label="Starting point">${startChoices.map(o=>`<option value="${e(o.id)}"${o.id===me.id?' selected':''}>${e(o.name)}</option>`).join('')}</select></label>`;}
+function setStart(id){
+ const o=originPoints.find(x=>x.id===id);if(!o)return;
+ Object.assign(me,{id:o.id,name:o.name,x:o.x,y:o.y,lat:o.lat,lon:o.lon});
+ state.compass=false;
+ if(state.dest){state.route=trim(walkingRoute(me,bOf(state.dest)));drawRoute();headingToRoute();}
+ renderPanel();requestAnimationFrame(()=>state.dest?fitDest():(view.x=me.x-view.w/2,view.y=me.y-view.w*aspect()/2,applyView()));
+}
+body.addEventListener('change',ev=>{if(ev.target.id==='fromSelect')setStart(ev.target.value);});
 function metres(){return Math.round((state.route?.length||0)*METRES_PER_UNIT);}
 // Minutes use the main prototype's formula (straight-line distance), so both versions agree.
 const minutes=p=>walkMinutes(distance(me,bOf(p)),p.floor);
@@ -160,12 +170,12 @@ function renderPanel(){
  panel.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===state.tab)));
  const p=state.dest,b=p&&bOf(p);
  if(state.tab==='directions'){
-  body.innerHTML=p?`<div class="s-sec"><h2>${e(p.name)}</h2><p class="s-meta">${e(b.name)} · ${e(floorName(p.floor,true))} · about ${minutes(p)} min</p>
+  body.innerHTML=p?`<div class="s-sec">${startPicker()}<h2>${e(p.name)}</h2><p class="s-meta">${e(b.name)} · ${e(floorName(p.floor,true))} · about ${minutes(p)} min</p>
    <ol class="s-steps"><li>Walk to <strong>${e(b.name)}</strong>, following the blue line.</li>
    <li>Go in and take the stairs or lift to <strong>${e(floorName(p.floor,true))}</strong>.</li>
    <li>Follow the room signs to <strong>${e(p.name)}</strong>.</li></ol>
-   <p class="s-note">Prototype: your position (Green Heart) and the route are simulated.</p></div>`
-  :`<div class="s-sec"><p>Search for a room, building or toilet to see directions.</p><p class="s-note">Try “Room 148”.</p></div>`;
+   <p class="s-note">Prototype: your position and the route are simulated.</p></div>`
+  :`<div class="s-sec">${startPicker()}<p>Search for a room, building or toilet to see directions.</p><p class="s-note">Try “Room 148”. Your position is simulated; change it above.</p></div>`;
  }else if(state.tab==='floor'){
   body.innerHTML=p?(p.floor?`<div class="s-sec"><p class="s-meta">${e(b.name)} · ${e(floorName(p.floor,true))}</p><div class="s-plan">${floorPlan(p.building,p.floor,true,{target:true})}</div></div>`
    :`<div class="s-sec"><p>The floor for this room has not been confirmed yet.</p></div>`)
