@@ -311,7 +311,7 @@ function renderFacilityBadges(){
  $('#facilityBadges').innerHTML=buildings.map(b=>{const fac=facilitiesIn(list,b.id);if(!fac.length)return '';const step=12.5,x0=-(fac.length-1)*step/2;
   return `<g class="fac-badges" data-building="${esc(b.id)}" transform="translate(${b.x} ${b.y+13})"><title>${esc(name(b)+': '+fac.map(type=>en?facilityTypes[type].en:facilityTypes[type].zh).join(', '))}</title>${fac.map((type,i)=>facBadge(type,x0+i*step,0)).join('')}</g>`;}).join('');
  const shown=facilityOrder.filter(type=>list.some(p=>p.type===type));
- $('#facLegend').innerHTML=shown.map(type=>`<span><svg viewBox="-10 -10 20 20" aria-hidden="true"><circle r="9" fill="${facilityTypes[type].color}"/><g style="color:${facilityTypes[type].color}">${facilityGlyph[type]}</g></svg>${en?facilityTypes[type].en:facilityTypes[type].zh}</span>`).join('')+(demo()?`<em>${t('模拟数据 · Simulated data','Simulated data · 模拟数据')}</em>`:'');
+ $('#facLegend').innerHTML=shown.map(type=>`<span><svg viewBox="-10 -10 20 20" aria-hidden="true"><circle r="9" fill="${facilityTypes[type].color}"/><g style="color:${facilityTypes[type].color}">${facilityGlyph[type]}</g></svg>${en?facilityTypes[type].en:facilityTypes[type].zh}</span>`).join('');
 }
 /* ---------- building popup: photo (if any) + facilities + 3D floor layers ---------- */
 let popupBuilding=null,popupSheet=null;
@@ -471,7 +471,7 @@ $('.dialog-intro').textContent=t('先选起点，再选教室或厕所。若在�
 const scopeText=document.querySelectorAll('.scope-grid article p');
 scopeText[0].textContent=t('可使用地图选点、地点搜索及筛选。收藏自动保存至本浏览器的访客账户，无需登录。','Choose map points, search and filter places. Bookmarks are saved to this browser’s guest account automatically.');
 scopeText[1].textContent=t('按示意步道图计算最短路径。无台阶模式仅在指定演示数据上筛选。','The shortest path is computed within an illustrative walking network. Step-free filtering applies to a limited demo catalogue.');
-scopeText[2].textContent=t('没有实时定位或已核验的导航。楼层平面图和通行提示为演示。地图建筑上的咖啡厅、打印、自习、电梯图标及标为“示例”的厕所均为模拟数据。真实入口照片会在获授权后补充。','No live positioning or verified navigation. Floor plans and access cues are illustrative. The café, printing, study and lift icons on buildings, and sample toilets, are simulated data. Entrance photos require approved source images.');
+scopeText[2].textContent=t('没有实时定位或已核验的导航。起点、路线、楼层平面图和通行提示均为示意。地图建筑上的咖啡厅、打印、自习、电梯图标及标为“示例”的厕所均为模拟数据。真实入口照片会在获授权后补充。','No live positioning or verified navigation. Your start, routes, floor plans and access cues are illustrative. The café, printing, study and lift icons on buildings, and sample toilets, are simulated data. Entrance photos require approved source images.');
 
 const feedbackCenter=setupFeedback({en,getContext:()=>state.guide?.id||state.selected?.id||null,placeName:id=>{const p=byId(id);return p?name(p):id;},toast});
 setupExplorer({en,onPeriod:value=>{state.period=value;render();},onReset:resetExplorer});
@@ -514,7 +514,9 @@ proactive=setupProactive({en,esc,icon,toast,
  startGuide:p=>{if(!allowed(p))return;state.selected=p;startJourney(p);},
  setStage:stage=>{stopTimers();state.stage=stage;state.recovery=false;refreshGuideOnly();},
  rerouteFrom:point=>chooseOrigin(point)});
+// The main-page banner was removed to keep the page light; this information lives in the DESIGN DEMO dialog.
 function showScopeNote(){
+ return;
  try{if(sessionStorage.getItem('clue:scope-note')==='closed')return;}catch{}
  if($('#scopeNote'))return;
  const note=document.createElement('div');note.id='scopeNote';note.className='scope-note';note.setAttribute('role','note');
