@@ -1,7 +1,7 @@
 import {setupNarration} from './narration.mjs?v=locate-map';
 import {setupFeedback} from './feedback.mjs?v=map-first-1';
 import {progressKey,trailDraft,readDraft} from './progress.mjs?v=map-first-1';
-import {setupExperience,refreshExperience,enhanceIndoor,mountFloorExplorer,focusGuide,setSheet} from './experience.mjs?v=review-1';
+import {setupExperience,refreshExperience,enhanceIndoor,mountFloorExplorer,focusGuide,setSheet,sheetLevel} from './experience.mjs?v=sheet-min-1';
 import {journeyMarkup,journeyNext,journeySteps} from './visual-journey.mjs?v=floor-sheet';
 import {places,sources,checked,buildings} from './data.mjs?v=room-148';
 import {sampleFacilities,facilityTypes,facilityGlyph,facilityOrder,facilitiesIn} from './facilities.mjs?v=fac-2';
@@ -309,7 +309,7 @@ function renderFacilityBadges(){
  $('#facLegend').innerHTML=shown.map(type=>`<span><svg viewBox="-10 -10 20 20" aria-hidden="true"><circle r="9" fill="${facilityTypes[type].color}"/><g style="color:${facilityTypes[type].color}">${facilityGlyph[type]}</g></svg>${en?facilityTypes[type].en:facilityTypes[type].zh}</span>`).join('')+(demo()?`<em>${t('模拟数据 · Simulated data','Simulated data · 模拟数据')}</em>`:'');
 }
 /* ---------- building popup: photo (if any) + facilities + 3D floor layers ---------- */
-let popupBuilding=null;
+let popupBuilding=null,popupSheet=null;
 function tapBuilding(id){
  const point=mapRow(id);if(!point)return;
  // Origin-setting flows keep their existing behaviour.
@@ -343,8 +343,9 @@ function openPopup(id){
  pop.querySelectorAll('[data-pop-floor]').forEach(btn=>btn.onclick=()=>{const sel=pop.querySelector('#floorSelect');if(!sel)return;sel.value=btn.dataset.popFloor;sel.dispatchEvent(new Event('change'));});
  pop.querySelector('[data-pop-open]').onclick=()=>{closePopup();showBuilding(id);};
  pop.querySelector('.pop-photo img')?.addEventListener('load',placePopup);
- if(matchMedia('(max-width:800px)').matches&&!state.stepCollapsed){state.stepCollapsed=true;syncControls();}
- pop.hidden=false;
+ // Phones: lower the sheet to its handle while the window is open, and put it back on close.
+ if(matchMedia('(max-width:800px)').matches&&popupSheet===null&&sheetLevel()>=0){popupSheet=sheetLevel();setSheet(-1);}
+ pop.hidden=false;document.body.classList.add('pop-open');
  $('#markers').querySelectorAll('[data-building]').forEach(pin=>pin.classList.toggle('popup-open',pin.dataset.building===id));
  placePopup();
 }
@@ -359,14 +360,15 @@ function floorDirectory(id,records){
  const rows=levels.slice().reverse().map(f=>`<div class="pop-level"><button type="button" class="pop-level-tag" data-pop-floor="${esc(f)}" aria-label="${esc(t('查看楼层','View floor')+' '+f)}">${esc(f)}</button><ul>${records.filter(p=>p.floor===f).sort((a,b)=>order(a)-order(b)).map(item).join('')}</ul></div>`).join('');
  return `<div class="pop-directory"><p class="pop-label">${t('各层有什么','What’s on each floor')}</p>${rows}${loose.length?`<div class="pop-level"><span class="pop-level-tag">?</span><ul>${loose.map(item).join('')}</ul></div>`:''}</div>`;
 }
-function closePopup(){const pop=$('#mapPopup');if(!pop||pop.hidden)return;pop.hidden=true;popupBuilding=null;$('#markers').querySelectorAll('.popup-open').forEach(pin=>pin.classList.remove('popup-open'));}
+function closePopup(){const pop=$('#mapPopup');if(!pop||pop.hidden)return;pop.hidden=true;document.body.classList.remove('pop-open');popupBuilding=null;if(popupSheet!==null&&sheetLevel()<0)setSheet(popupSheet);popupSheet=null;$('#markers').querySelectorAll('.popup-open').forEach(pin=>pin.classList.remove('popup-open'));}
 function placePopup(){
  const pop=$('#mapPopup');if(!pop||pop.hidden||!popupBuilding)return;
  const b=mapRow(popupBuilding),paper=$('.map-paper').getBoundingClientRect(),m=svg.getScreenCTM();if(!m)return;
  const pt=svg.createSVGPoint();pt.x=b.x;pt.y=b.y;const s=pt.matrixTransform(m),x=s.x-paper.left,y=s.y-paper.top;
  if(matchMedia('(max-width:800px)').matches){ // docked sheet on phones, kept below the floating search card
   const tb=$('.explorer-toolbar')?.getBoundingClientRect(),cover=tb&&tb.bottom>paper.top?tb.bottom:paper.top;
-  pop.style.left='';pop.style.top='';pop.style.maxHeight=Math.max(220,paper.bottom-cover-14)+'px';return;}
+  const col=$('.clue-extension-column'),sheetTop=sheetLevel()<0?innerHeight-62-44:(col?col.getBoundingClientRect().top:paper.bottom),floor=Math.min(paper.bottom,sheetTop);
+  pop.style.left='';pop.style.top='';pop.style.bottom=Math.max(6,paper.bottom-floor+6)+'px';pop.style.maxHeight=Math.max(220,floor-cover-14)+'px';return;}
  const w=pop.offsetWidth,h=pop.offsetHeight,gap=18,clampX=v=>Math.max(8,Math.min(paper.width-w-8,v)),clampY=v=>Math.max(8,Math.min(paper.height-h-8,v));
  let top,left;
  if(y-h-gap>=8){top=y-h-gap;left=clampX(x-w/2);}                       // above the pin

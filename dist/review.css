@@ -115,3 +115,20 @@
 .pop-level li svg{flex:none;width:15px;height:15px}
 .pop-room-dot{flex:none;width:7px;height:7px;margin:0 4px;border-radius:50%;background:#614c38}
 .pop-level em{font-style:normal;font-size:10px;color:#a43c2f;border:1px solid #e3b7ad;border-radius:4px;padding:0 3px}
+/* Phones: a folded step card keeps only its heading row. */
+@media (max-width:800px){
+ body.meeting-layout .explorer-toolbar>.route-origin-row.is-collapsed~*:not(#_){display:none!important}
+ .route-origin-row.is-collapsed{padding:5px 8px}
+ .route-origin-row.is-collapsed .route-step-toggle{width:30px;height:30px}
+}
+/* Sheet lowered to its handle only (drag down, or while a building window is open). */
+.meeting-layout.sheet-min .case-file,.meeting-layout.sheet-min .branch-heading,.meeting-layout.sheet-min .branch-link-canvas{display:none!important}
+@media (max-width:800px){.meeting-layout.sheet-min .clue-extension-column{height:44px!important;min-height:44px}}
+.meeting-layout.sheet-min .sheet-handle{min-height:44px}
+@media (max-width:800px){
+ /* keep the key just above the sheet, whatever its height */
+ .meeting-layout .fac-legend{position:fixed;left:8px;bottom:calc(62px + var(--clue-sheet,44dvh) + 8px);max-width:calc(100vw - 84px);z-index:40;padding:4px 8px;gap:2px 8px;font-size:11px}
+ .meeting-layout .fac-legend svg{width:13px;height:13px}
+ .meeting-layout .fac-legend em{font-size:10px}
+ body.pop-open .sim-toggle,body.pop-open .fac-legend{display:none!important}
+}
