@@ -150,3 +150,13 @@
 
  .meeting-layout .topbar nav>a.nav-rec{color:#a43c2f}
 }
+.nav-swap-badge{display:none}
+@media (max-width:800px){
+ .meeting-layout .nav-icon-wrap{position:relative;display:block}
+ .meeting-layout .nav-swap-badge{display:grid;place-items:center;position:absolute;top:-5px;right:-11px;width:15px;height:15px;border-radius:50%;background:#344c40;color:#fff8e6;box-shadow:0 0 0 1.5px #f7f0df}
+ .meeting-layout .nav-rec .nav-swap-badge{background:#a43c2f}
+ .meeting-layout .nav-swap-badge svg{width:11px;height:11px}
+}
+/* Show the whole building photograph, not a cropped strip */
+.pop-photo img,.map-popup .pop-photo img{height:auto!important;max-height:240px;object-fit:contain;background:#efe4cc}
+@media (max-width:800px){.map-popup .pop-photo img{max-height:24dvh}}
