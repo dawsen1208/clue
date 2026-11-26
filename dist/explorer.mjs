@@ -28,7 +28,7 @@ export function setupExplorer({en,onPeriod,onReset}){
  const canvas=document.createElementNS('http://www.w3.org/2000/svg','svg');canvas.id='branchLinkCanvas';canvas.setAttribute('class','branch-link-canvas');canvas.setAttribute('aria-hidden','true');canvas.innerHTML='<path id="branchLinkShadow"/><path id="branchLink"/><path id="branchFloorLink"/><circle id="branchStart" r="13"/><circle id="branchEnd" r="5"/>';work.append(canvas);
  $('#exploreList').onclick=()=>{if(lastView==='saved'&&!$('#boardPage').classList.contains('has-case'))showExplorerList();else onReset();};$('#exploreMap').onclick=()=>{$('#resetMap').click();if(!reduced())map.animate([{opacity:.65},{opacity:1}],{duration:300});queueLink();};$('#popularPeriod').onchange=e=>{onPeriod(e.target.value);showExplorerList();};$('#explorerReset').onclick=onReset;
  $('#search').addEventListener('input',()=>queueLink());$('#searchForm').addEventListener('submit',showExplorerList);document.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',showExplorerList));
- $('#indoorTab').textContent=t('楼层线索','Floor clue');$('#outdoorTab').textContent=t('校园地图','Campus map');
+ $('#indoorTab').textContent=t('推荐','Recommend');$('#outdoorTab').textContent=t('校园地图','Campus map');
  window.addEventListener('resize',()=>queueLink());const map=$('#campusMap');new MutationObserver(()=>queueLink()).observe(map,{attributes:true,attributeFilter:['viewBox']});new MutationObserver(()=>queueLink()).observe(indoor,{attributes:true,attributeFilter:['hidden'],childList:true});if(window.ResizeObserver){const ro=new ResizeObserver(()=>queueLink());[work,file,map,indoor].forEach(node=>ro.observe(node));}
 }
 export function refreshExplorer({en,view,place,guide,stage,period,popular,query,category}){

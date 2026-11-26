@@ -132,3 +132,18 @@
  .meeting-layout .fac-legend em{font-size:10px}
  body.pop-open .sim-toggle,body.pop-open .fac-legend{display:none!important}
 }
+/* Campus map / Recommend tabs replace the old Trending / Map overview switch. */
+.meeting-layout .explorer-switch{display:none!important}
+.map-tabs button.active,.map-tabs button[aria-pressed=true]{background:#344c40!important;color:#fff8e6!important}
+@media (max-width:800px){
+ .meeting-layout .case-workspace .board-topline,.meeting-layout.map-overview .case-workspace .board-topline{display:none!important}
+ .meeting-layout .sheet-tabs{position:absolute;top:4px;right:8px;z-index:3;display:flex;border:1px solid #bda67f;border-radius:6px;overflow:hidden;background:#fff6e1}
+ .meeting-layout .sheet-tabs button{min-height:34px;padding:4px 11px;border:0;background:none;font:600 12px system-ui,'Microsoft YaHei',sans-serif;color:#4d5c3e;cursor:pointer}
+ .meeting-layout .sheet-tabs button+button{border-left:1px solid #bda67f}
+ .meeting-layout .sheet-tabs button[aria-pressed=true]{background:#344c40;color:#fff8e6}
+ .meeting-layout .sheet-handle{justify-content:flex-start!important;padding-left:18px}
+ .meeting-layout .sheet-handle small{display:none}
+ .meeting-layout .sim-toggle{bottom:calc(var(--clue-sheet,22dvh) + 62px + 12px)!important}
+}
+.sheet-tabs{display:none}
+@media (max-width:800px){body.rec-mode .sim-toggle{display:none!important}}
