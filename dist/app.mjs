@@ -372,7 +372,7 @@ function placePopup(){
  const pt=svg.createSVGPoint();pt.x=b.x;pt.y=b.y;const s=pt.matrixTransform(m),x=s.x-paper.left,y=s.y-paper.top;
  if(matchMedia('(max-width:800px)').matches){ // docked sheet on phones, kept below the floating search card
   const tb=$('.explorer-toolbar')?.getBoundingClientRect(),cover=tb&&tb.bottom>paper.top?tb.bottom:paper.top;
-  const col=$('.clue-extension-column'),sheetTop=sheetLevel()<0?innerHeight-62-44:(col?col.getBoundingClientRect().top:paper.bottom),floor=Math.min(paper.bottom,sheetTop);
+  const col=$('.clue-extension-column'),sheetTop=sheetLevel()<0?innerHeight-62-44-44:(col?col.getBoundingClientRect().top:paper.bottom),floor=Math.min(paper.bottom,sheetTop);
   pop.style.left='';pop.style.top='';pop.style.bottom=Math.max(6,paper.bottom-floor+6)+'px';pop.style.maxHeight=Math.max(220,floor-cover-14)+'px';return;}
  const w=pop.offsetWidth,h=pop.offsetHeight,gap=18,clampX=v=>Math.max(8,Math.min(paper.width-w-8,v)),clampY=v=>Math.max(8,Math.min(paper.height-h-8,v));
  let top,left;
@@ -488,10 +488,10 @@ $('#exploreMap').addEventListener('click',()=>{state.recommended=false;syncContr
 $('#exploreList').addEventListener('click',()=>{state.recommended=true;syncControls();});
 $('[data-nav="find"]').onclick=e=>{e.preventDefault();location.hash='/find';goOverview();};
 $('#sheetHandle').addEventListener('click',syncControls);
-// Phones: the same two tabs sit on the sheet's top edge, so they stay reachable at every sheet height.
+// Phones: the same two tabs sit in a fixed bar just above the bottom navigation, always visible.
 {const tabs=document.createElement('div');tabs.className='sheet-tabs';tabs.setAttribute('role','group');tabs.setAttribute('aria-label',t('地图与推荐','Map and recommendations'));
  tabs.innerHTML=`<button type="button" data-sheet-tab="map">${t('校园地图','Campus map')}</button><button type="button" data-sheet-tab="rec">${t('推荐','Recommend')}</button>`;
- $('.clue-extension-column').append(tabs);
+ document.body.append(tabs);
  tabs.querySelector('[data-sheet-tab="map"]').onclick=()=>$('#outdoorTab').click();
  tabs.querySelector('[data-sheet-tab="rec"]').onclick=()=>$('#indoorTab').click();}
 syncControls();
