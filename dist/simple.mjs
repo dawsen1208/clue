@@ -6,12 +6,13 @@ import {withSampleDestinations,scenarioOrigin,walkMinutes} from './concept.mjs?v
 import {originPoints,walkingRoute} from './campus-routing.mjs?v=start-first';
 import {floorPlan,escapeText as e} from './map-first.mjs?v=locate-map';
 import {buildings} from './data.mjs?v=room-148';
+import {sampleFacilities,facilityTypes,facilityGlyph,facilityOrder,facilitiesIn} from './facilities.mjs?v=fac-1';
 
-const directory=withSampleDestinations(places,originPoints);
+const directory=[...withSampleDestinations(places,originPoints),...sampleFacilities()];
 const CROP={x:786,y:47,w:946,h:1037};          // same crop as the main map (legend excluded)
 const METRES_PER_UNIT=1.45;                    // from the map↔geo alignment in core.mjs
 const me={...(originPoints.find(o=>o.id==='green')||scenarioOrigin)}; // same default start as the main prototype
-const state={dest:null,route:null,tab:'directions',open:false,heading:35,compass:false};
+const state={dest:null,route:null,tab:'directions',open:false,heading:35,compass:false,bldg:null,steps:{1:true,2:false}};
 const view={x:0,y:0,w:420};
 const bOf=p=>originPoints.find(b=>b.id===p.building);
 
@@ -28,6 +29,7 @@ app.innerHTML=`
    <circle class="s-me-dot" r="12"/>
   </g>
  </svg>
+ <div class="s-legend" id="legend" aria-label="Map key">${facilityOrder.map(t=>`<span><svg viewBox="-10 -10 20 20" aria-hidden="true"><circle r="9" fill="${facilityTypes[t].color}"/><g style="color:${facilityTypes[t].color}">${facilityGlyph[t]}</g></svg>${facilityTypes[t].en}</span>`).join('')}<em class="s-sim">Simulated data · 模拟数据</em></div>
  <ol class="s-results" id="results" hidden></ol>
  <button class="s-locate" id="locate" type="button" aria-label="Centre on my location"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="#1a73e8"/><circle cx="12" cy="12" r="8" fill="none" stroke="#1a73e8" stroke-width="2"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4" stroke="#1a73e8" stroke-width="2"/></svg></button>
 </div>
@@ -70,7 +72,8 @@ function centreOn(points,pad=1.5){
 }
 const pointers=new Map();let pinchStart=null;
 function toMap(dx,dy){const r=mapEl.getBoundingClientRect();return [dx*view.w/r.width,dy*view.w/r.width];}
-mapEl.addEventListener('pointerdown',ev=>{if(ev.target.closest('button,.s-results'))return;mapEl.setPointerCapture(ev.pointerId);pointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});if(pointers.size===2){const [a,b]=[...pointers.values()];pinchStart={d:Math.hypot(a.x-b.x,a.y-b.y),w:view.w};}});
+let tap=null;
+mapEl.addEventListener('pointerdown',ev=>{if(ev.target.closest('button,.s-results'))return;tap=pointers.size?null:{x:ev.clientX,y:ev.clientY};mapEl.setPointerCapture(ev.pointerId);pointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});if(pointers.size===2){const [a,b]=[...pointers.values()];pinchStart={d:Math.hypot(a.x-b.x,a.y-b.y),w:view.w};}});
 mapEl.addEventListener('pointermove',ev=>{
  const prev=pointers.get(ev.pointerId);if(!prev)return;
  if(pointers.size===1){const [dx,dy]=toMap(ev.clientX-prev.x,ev.clientY-prev.y);view.x-=dx;view.y-=dy;}
@@ -78,7 +81,12 @@ mapEl.addEventListener('pointermove',ev=>{
  if(pointers.size===2&&pinchStart){const [a,b]=[...pointers.values()];zoomAt((a.x+b.x)/2,(a.y+b.y)/2,pinchStart.w*pinchStart.d/Math.max(1,Math.hypot(a.x-b.x,a.y-b.y)));}
  applyView();
 });
-['pointerup','pointercancel'].forEach(t=>mapEl.addEventListener(t,ev=>{pointers.delete(ev.pointerId);if(pointers.size<2)pinchStart=null;}));
+['pointerup','pointercancel'].forEach(t=>mapEl.addEventListener(t,ev=>{
+ if(t==='pointerup'&&tap&&pointers.size===1&&Math.hypot(ev.clientX-tap.x,ev.clientY-tap.y)<6){
+  const pin=document.elementsFromPoint(ev.clientX,ev.clientY).map(n=>n.closest?.('.s-pin')).find(Boolean);
+  if(pin)openBuilding(pin.dataset.id);
+ }
+ tap=null;pointers.delete(ev.pointerId);if(pointers.size<2)pinchStart=null;}));
 function zoomAt(clientX,clientY,newW){
  const r=mapEl.getBoundingClientRect(),fx=(clientX-r.left)/r.width,fy=(clientY-r.top)/r.height,a=aspect();
  const mx=view.x+fx*view.w,my=view.y+fy*view.w*a;
@@ -91,7 +99,9 @@ addEventListener('resize',applyView);
 function drawPins(){
  const ids=new Set(buildings.map(b=>b.id));if(state.dest)ids.add(state.dest.building);
  $('pinLayer').innerHTML=[...ids].map(id=>{const b=originPoints.find(p=>p.id===id);const dest=state.dest?.building===id;
-  return `<g class="s-pin${dest?' is-dest':''}" data-x="${b.x}" data-y="${b.y}"><circle r="${dest?11:7}"/><text x="${dest?15:11}" y="5">${e(dest?b.name:b.id)}</text></g>`;}).join('');
+  const fac=facilitiesIn(directory,id),sel=state.bldg===id;
+  const badges=fac.map((t,i)=>`<g class="s-badge" transform="translate(${(dest?15:11)+9+i*19} 21)" style="color:${facilityTypes[t].color}"><circle r="9" fill="${facilityTypes[t].color}"/>${facilityGlyph[t]}</g>`).join('');
+  return `<g class="s-pin${dest?' is-dest':''}${sel?' is-sel':''}" data-id="${e(id)}" data-x="${b.x}" data-y="${b.y}" role="button" aria-label="${e(b.name+': '+fac.map(t=>facilityTypes[t].en).join(', '))}"><rect class="s-hit" x="-14" y="-14" width="${(dest?15:11)+Math.max(40,fac.length*19)+14}" height="46" fill="transparent"/><circle r="${dest?11:7}"/><text x="${dest?15:11}" y="5">${e(dest?b.name:b.id)}</text>${badges}</g>`;}).join('');
 }
 function drawRoute(){
  const pts=state.route?.points;
@@ -130,7 +140,7 @@ $('clear').addEventListener('click',()=>{q.value='';search('');state.dest=null;s
 
 function choose(id){
  const p=directory.find(x=>x.id===id);if(!p)return;
- state.dest=p;state.route=trim(walkingRoute(me,bOf(p)));
+ state.bldg=null;state.steps={1:true,2:false};state.dest=p;state.route=trim(walkingRoute(me,bOf(p)));
  q.value=p.name;results.hidden=true;q.blur();$('clear').hidden=false;
  drawPins();drawRoute();headingToRoute();
  state.tab='directions';state.open=true;renderPanel();
@@ -140,12 +150,28 @@ function fitDest(){if(state.dest)centreOn(state.route?.points||[me,bOf(state.des
 // The panel height animates; re-fit once it settles so the route stays in view.
 body.addEventListener('transitionend',ev=>{if(ev.propertyName==='max-height'){applyView();fitDest();}});
 
+/* ---------- building card (tap a pin) ---------- */
+function openBuilding(id){state.bldg=id;state.tab='directions';state.open=true;drawPins();renderPanel();}
+function buildingCard(id){
+ const b=originPoints.find(p=>p.id===id),inside=directory.filter(p=>p.building===id);
+ const groups=facilityOrder.map(t=>[t,inside.filter(p=>p.type===t)]).filter(([,l])=>l.length);
+ const rooms=inside.filter(p=>p.type==='room');
+ const row=p=>`<li><button type="button" data-id="${e(p.id)}"><span>${e(p.name)}${p.sample?' <em class="s-tag">simulated</em>':''}</span><small>${e(floorName(p.floor,true))}</small></button></li>`;
+ return `<div class="s-sec"><div class="s-bhead"><h2>${e(b.name)}</h2><button type="button" class="s-x" data-close aria-label="Close building">×</button></div>
+  ${groups.map(([t,l])=>`<p class="s-group"><svg viewBox="-10 -10 20 20" aria-hidden="true"><circle r="9" fill="${facilityTypes[t].color}"/><g style="color:${facilityTypes[t].color}">${facilityGlyph[t]}</g></svg>${facilityTypes[t].en}</p><ul class="s-list">${l.map(row).join('')}</ul>`).join('')}
+  ${rooms.length?`<p class="s-group s-plain">Rooms</p><ul class="s-list">${rooms.map(row).join('')}</ul>`:''}
+  <p class="s-note">Simulated data (模拟数据): café, printing, study and lift entries, and toilets marked “simulated”, are placeholders for this design demo. Their locations and floors are not real.</p></div>`;
+}
+
 /* ---------- bottom panel ---------- */
 panel.querySelector('.s-tabs').addEventListener('click',ev=>{
  const b=ev.target.closest('button[data-tab]');if(!b)return;
  state.open=!(state.open&&state.tab===b.dataset.tab);state.tab=b.dataset.tab;renderPanel();
 });
-body.addEventListener('click',ev=>{const b=ev.target.closest('button[data-id]');if(b)choose(b.dataset.id);});
+body.addEventListener('click',ev=>{
+ if(ev.target.closest('[data-close]')){state.bldg=null;drawPins();if(!state.dest)state.open=false;renderPanel();return;}
+ const b=ev.target.closest('button[data-id]');if(b)choose(b.dataset.id);});
+body.addEventListener('toggle',ev=>{const d=ev.target;if(d.dataset?.step)state.steps[d.dataset.step]=d.open;},true);
 // Drop a first junction that lies behind the walker, so the line leaves the marker forwards.
 function trim(route){
  if(!route||route.points.length<3)return route;
@@ -170,12 +196,15 @@ function renderPanel(){
  panel.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===state.tab)));
  const p=state.dest,b=p&&bOf(p);
  if(state.tab==='directions'){
-  body.innerHTML=p?`<div class="s-sec">${startPicker()}<h2>${e(p.name)}</h2><p class="s-meta">${e(b.name)} · ${e(floorName(p.floor,true))} · about ${minutes(p)} min</p>
-   <ol class="s-steps"><li>Walk to <strong>${e(b.name)}</strong>, following the blue line.</li>
-   <li>Go in and take the stairs or lift to <strong>${e(floorName(p.floor,true))}</strong>.</li>
-   <li>Follow the room signs to <strong>${e(p.name)}</strong>.</li></ol>
+  const hasLift=p&&directory.some(x=>x.building===p.building&&x.type==='lift');
+  const loo=p&&directory.find(x=>x.building===p.building&&x.type==='toilet');
+  body.innerHTML=state.bldg?buildingCard(state.bldg):p?`<div class="s-sec">${startPicker()}<h2>${e(p.name)}</h2><p class="s-meta">${e(b.name)} · ${e(floorName(p.floor,true))} · about ${minutes(p)} min</p>
+   <details class="s-step" data-step="1"${state.steps[1]?' open':''}><summary><b>1</b><span><strong>Outdoors</strong><small>Walk to ${e(b.name)}</small></span></summary>
+    <ol class="s-steps"><li>Walk to <strong>${e(b.name)}</strong>, following the blue line.</li><li>Enter the building.</li></ol></details>
+   <details class="s-step" data-step="2"${state.steps[2]?' open':''}><summary><b>2</b><span><strong>Inside the building</strong><small>${e(floorName(p.floor,true))} · ${e(p.name)}</small></span></summary>
+    <ol class="s-steps"><li>Take the stairs${hasLift?' or lift':''} to <strong>${e(floorName(p.floor,true))}</strong>.</li><li>Follow the room signs to <strong>${e(p.name)}</strong>.</li></ol>${loo&&p.type!=='toilet'?`<p class="s-hint">Toilet in this building: ${e(loo.name)}${loo.sample?' (simulated)':''}.</p>`:''}</details>
    <p class="s-note">Prototype: your position and the route are simulated.</p></div>`
-  :`<div class="s-sec">${startPicker()}<p>Search for a room, building or toilet to see directions.</p><p class="s-note">Try “Room 148”. Your position is simulated; change it above.</p></div>`;
+  :`<div class="s-sec">${startPicker()}<p>Search for a room, building or toilet to see directions.</p><p class="s-note">Try “Room 148”, or tap a building to see what's inside. Your position is simulated; change it above.</p></div>`;
  }else if(state.tab==='floor'){
   body.innerHTML=p?(p.floor?`<div class="s-sec"><p class="s-meta">${e(b.name)} · ${e(floorName(p.floor,true))}</p><div class="s-plan">${floorPlan(p.building,p.floor,true,{target:true})}</div></div>`
    :`<div class="s-sec"><p>The floor for this room has not been confirmed yet.</p></div>`)
