@@ -123,7 +123,6 @@ function syncControls(){
   $('#outdoorTab').classList.toggle('active',!rec);$('#indoorTab').classList.toggle('active',rec);
   $('#outdoorTab').setAttribute('aria-pressed',String(!rec));$('#indoorTab').setAttribute('aria-pressed',String(rec));
   document.body.classList.toggle('rec-mode',rec);
-  document.querySelectorAll('[data-sheet-tab]').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.sheetTab==='rec')===rec)));
   const folded=Boolean(state.stepCollapsed)&&!state.pick;
   route.classList.toggle('is-collapsed',folded);
   $('#routeStepToggle').setAttribute('aria-expanded',String(!folded));
@@ -142,7 +141,10 @@ function syncControls(){
   $('#routeDestinationHint').textContent=t('点地图上的建筑选地点，或直接找最近的厕所。','Tap a building to pick a place, or find the nearest toilet.');
  }
  const nav=$('[data-nav="find"]');
- if(nav)nav.textContent=t('地图','Map');
+ if(nav){const rec=state.recommended&&!document.body.classList.contains('map-overview');
+  nav.classList.toggle('nav-rec',rec);
+  nav.innerHTML=`<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${rec?'<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>':'<path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/>'}</svg><span>${rec?t('推荐','Recommend'):t('地图','Map')}</span><small class="nav-swap" aria-hidden="true">⇄ ${rec?t('地图','Map'):t('推荐','Recommend')}</small>`;
+  nav.setAttribute('aria-label',rec?t('推荐（点击切换到地图）','Recommend (tap to switch to map)'):t('地图（点击切换到推荐）','Map (tap to switch to recommendations)'));}
 }
 function setMapOriginPicking(active){
  state.pick=active;
@@ -486,14 +488,11 @@ $('#nearestToilet').onclick=nearestToilet;
 $('#nearestAdapted').onchange=e=>{state.accessible=e.target.checked;$('#accessible').checked=state.accessible;render();};
 $('#exploreMap').addEventListener('click',()=>{state.recommended=false;syncControls();});
 $('#exploreList').addEventListener('click',()=>{state.recommended=true;syncControls();});
-$('[data-nav="find"]').onclick=e=>{e.preventDefault();location.hash='/find';goOverview();};
+$('[data-nav="find"]').onclick=e=>{e.preventDefault();
+ const onBoard=state.view==='find'&&!state.selected&&!state.guide&&!$('#boardPage')?.classList.contains('has-case');
+ if(onBoard){(state.recommended&&!document.body.classList.contains('map-overview')?$('#outdoorTab'):$('#indoorTab')).click();return;}
+ location.hash='/find';goOverview();};
 $('#sheetHandle').addEventListener('click',syncControls);
-// Phones: the same two tabs sit in a fixed bar just above the bottom navigation, always visible.
-{const tabs=document.createElement('div');tabs.className='sheet-tabs';tabs.setAttribute('role','group');tabs.setAttribute('aria-label',t('地图与推荐','Map and recommendations'));
- tabs.innerHTML=`<button type="button" data-sheet-tab="map">${t('校园地图','Campus map')}</button><button type="button" data-sheet-tab="rec">${t('推荐','Recommend')}</button>`;
- document.body.append(tabs);
- tabs.querySelector('[data-sheet-tab="map"]').onclick=()=>$('#outdoorTab').click();
- tabs.querySelector('[data-sheet-tab="rec"]').onclick=()=>$('#indoorTab').click();}
 syncControls();
 
 window.addEventListener('pagehide',saveProgress);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveProgress();});
