@@ -63,3 +63,55 @@
 .fac-legend svg{width:15px;height:15px}
 .fac-legend em{flex-basis:100%;font-style:normal;font-size:11px;color:#a43c2f}
 @media (min-width:801px){.fac-legend{top:10px;left:44px;bottom:auto}}
+/* Building popup on the map: photo + facilities + 3D floor layers */
+.map-popup{position:absolute;z-index:7;width:min(310px,calc(100% - 16px));max-height:calc(100% - 16px);display:flex;flex-direction:column;background:#fffaec;border:1px solid #bba67b;border-top:3px solid #a43c2f;border-radius:8px;box-shadow:0 10px 30px #2a20124d;color:#253d34;font:14px/1.35 system-ui,'Microsoft YaHei',sans-serif}
+.map-popup[hidden]{display:none}
+.pop-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:10px 10px 6px 12px}
+.pop-head small{font:700 11px var(--mono,monospace);letter-spacing:.6px;color:#a43c2f}
+.pop-head h3{margin:1px 0 0;font:700 1.08rem/1.2 Georgia,'Noto Serif SC',serif}
+.pop-close{flex:none;width:32px;height:32px;border:1px solid #d8ceba;border-radius:50%;background:#f6ecd5;display:grid;place-items:center;cursor:pointer;padding:0}
+.pop-close .icon{width:16px;height:16px}
+.pop-scroll{overflow:auto;min-height:0;padding:0 12px}
+.pop-photo{margin:0 0 8px}
+.pop-photo img{display:block;width:100%;height:132px;object-fit:cover;border-radius:5px;background:#e8dbc0}
+.pop-photo figcaption{margin-top:3px;font-size:11px;color:#6b5c45}
+.pop-facs{display:flex;flex-wrap:wrap;gap:4px 10px;margin:2px 0 6px;font-size:12px;font-weight:600}
+.pop-fac{display:inline-flex;align-items:center;gap:4px}
+.pop-fac svg{width:16px;height:16px}
+.pop-label{margin:6px 0 2px;font:700 11px var(--mono,monospace);letter-spacing:.6px;color:#6b5c45;text-transform:uppercase}
+.map-popup .floor-view-controls{gap:4px}
+.map-popup .floor-view-controls button,.map-popup .floor-view-controls select{min-height:34px;padding:4px 8px;font-size:11px}
+.map-popup .floor-layer-note{margin:4px 0;font-size:12px}
+.map-popup .floor-stack{height:calc(70px + var(--n,3)*26px);perspective:700px;margin-top:2px}
+.map-popup .floor-stack .floor-plate{width:180px;height:62px;bottom:calc(2px + var(--layer)*26px);padding:6px}
+.map-popup .floor-stack .floor-plate .floor-number{font-size:18px;left:8px;top:auto;bottom:4px}
+.map-popup .floor-stack .floor-plate i,.map-popup .floor-stack .floor-target{display:none}
+.map-popup .floor-stack .floor-plate i{width:34px;height:20px;bottom:8px;left:10px}
+.map-popup .floor-stack .floor-plate i:nth-of-type(2){left:52px}
+.map-popup .floor-stack .floor-plate i:nth-of-type(3){left:94px}
+.plate-facs{position:absolute;left:38px;bottom:5px;display:flex;gap:3px}
+.plate-facs svg{width:17px;height:17px}
+.map-popup .floor-assumption{display:block;margin:2px 0 4px;font-size:11px;color:#614c36}
+.map-popup #selectedFloorPlan svg{width:100%}
+.pop-sim{margin:4px 0 8px;font-size:11px;color:#a43c2f}
+.pop-actions{padding:8px 12px 12px;border-top:1px dashed #cab58d}
+.pop-actions .primary{width:100%;min-height:40px;display:flex;align-items:center;justify-content:center;gap:6px}
+.route-pin.popup-open .route-pin-dot{fill:#ae3427!important;stroke-width:3px}
+@media (max-width:800px){
+ .map-popup{left:6px!important;right:6px;top:auto!important;bottom:6px;width:auto;max-height:66%;z-index:30}
+ .pop-head{padding:8px 8px 4px 12px}
+ .pop-photo img{height:92px}
+ .pop-photo figcaption{display:none}
+ .map-popup .floor-view-controls label{display:none}
+ .map-popup .floor-layer-note{display:none}
+}
+/* Floor directory inside the popup */
+.pop-directory{margin:4px 0 6px}
+.pop-level{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-top:1px dotted #d8ceba}
+.pop-level-tag{flex:none;min-width:30px;height:24px;border:1px solid #91825f;background:#e8dbc0;font:700 12px Georgia,serif;color:#3b5141;cursor:pointer;display:grid;place-items:center;transform:skewX(-12deg)}
+.pop-level ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;min-width:0}
+.pop-level li button{display:flex;align-items:center;gap:6px;width:100%;padding:2px 0;border:0;background:none;text-align:left;font:13px/1.3 system-ui,'Microsoft YaHei',sans-serif;color:#253d34;cursor:pointer}
+.pop-level li button:hover span{text-decoration:underline}
+.pop-level li svg{flex:none;width:15px;height:15px}
+.pop-room-dot{flex:none;width:7px;height:7px;margin:0 4px;border-radius:50%;background:#614c38}
+.pop-level em{font-style:normal;font-size:10px;color:#a43c2f;border:1px solid #e3b7ad;border-radius:4px;padding:0 3px}
