@@ -17,7 +17,7 @@ export const facilityGlyph={
  lift:'<path d="M-3 -1l3-4.5l3 4.5z M-3 1l3 4.5l3-4.5z" fill="#fff"/>'
 };
 const plan={
- R30:[['cafe','Café','咖啡厅','G'],['print','Print & copy point','打印复印点','G'],['study','Silent study area','安静自习区','2'],['lift','Lifts','电梯','G']],
+ R30:[['cafe','Café','咖啡厅','G'],['print','Print & copy point','打印复印点','G'],['study','Silent study area','安静自习区','1'],['lift','Lifts','电梯','G']],
  R32:[['cafe','Café','咖啡厅','G'],['study','Open study space','开放自习区','1'],['print','Print point','打印点','UG'],['lift','Lifts','电梯','G']],
  R16:[['print','Print point','打印点','G'],['lift','Lift','电梯','G']],
  R18:[['lift','Lift','电梯','G']],
@@ -33,7 +33,7 @@ export function sampleFacilities(){
  return Object.entries(plan).flatMap(([building,list])=>list.map(([type,name,zh,floor])=>({
   id:`fac-${building.toLowerCase()}-${type}`,type,building,name,zh,aliases:aliases[type],floor,source:null,accessible:false,genderNeutral:false,
   scenario:true,sample:true,facility:true,originalFloor:null,availability:'scenario-available',
-  note:['示例功能房间，用于测试交互；实际位置与楼层待核实。','Sample facility for testing the flow; actual location and floor unverified.']
+  note:['模拟数据：示例功能房间，仅用于设计演示；实际位置与楼层并非真实。','Simulated data: a sample facility for this design demo. Its location and floor are not real.']
  })));
 }
 export const facilityOrder=['toilet','cafe','print','study','lift'];

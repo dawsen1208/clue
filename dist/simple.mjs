@@ -6,7 +6,7 @@ import {withSampleDestinations,scenarioOrigin,walkMinutes} from './concept.mjs?v
 import {originPoints,walkingRoute} from './campus-routing.mjs?v=start-first';
 import {floorPlan,escapeText as e} from './map-first.mjs?v=locate-map';
 import {buildings} from './data.mjs?v=room-148';
-import {sampleFacilities,facilityTypes,facilityGlyph,facilityOrder,facilitiesIn} from './facilities.mjs?v=fac-1';
+import {sampleFacilities,facilityTypes,facilityGlyph,facilityOrder,facilitiesIn} from './facilities.mjs?v=fac-2';
 
 const directory=[...withSampleDestinations(places,originPoints),...sampleFacilities()];
 const CROP={x:786,y:47,w:946,h:1037};          // same crop as the main map (legend excluded)
@@ -22,12 +22,13 @@ app.innerHTML=`
  <svg id="svg" role="img" aria-label="Campus map">
   <defs><clipPath id="crop"><rect x="${CROP.x}" y="${CROP.y}" width="${CROP.w}" height="${CROP.h}"/></clipPath></defs>
   <image href="assets/campus-map.webp" width="1786" height="1263" clip-path="url(#crop)"/>
-  <g id="routeLayer"></g><g id="pinLayer"></g>
+  <g id="routeLayer"></g>
   <g id="meMarker" aria-label="Your location">
    <circle class="s-me-ring" r="34"/>
    <g id="meHeading"><path class="s-me-cone" d="M0 0 L-30 -70 A76 76 0 0 1 30 -70 Z"/></g>
    <circle class="s-me-dot" r="12"/>
   </g>
+  <g id="pinLayer"></g>
  </svg>
  <div class="s-legend" id="legend" aria-label="Map key">${facilityOrder.map(t=>`<span><svg viewBox="-10 -10 20 20" aria-hidden="true"><circle r="9" fill="${facilityTypes[t].color}"/><g style="color:${facilityTypes[t].color}">${facilityGlyph[t]}</g></svg>${facilityTypes[t].en}</span>`).join('')}<em class="s-sim">Simulated data · 模拟数据</em></div>
  <ol class="s-results" id="results" hidden></ol>

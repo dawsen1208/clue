@@ -48,3 +48,18 @@
 @media(max-width:800px){.sim-toggle{left:auto;right:12px;bottom:auto;top:72px;min-height:40px;padding:0 12px;font-size:12px}.sim-panel{left:12px;right:12px;width:auto;top:118px;bottom:auto;max-height:calc(100dvh - 230px)}}
 .sim-toggle.is-running:not([aria-expanded="true"])::after{content:"";width:8px;height:8px;border-radius:50%;background:#7ee08a;box-shadow:0 0 0 3px #7ee08a44}
 @media(max-width:800px){.sim-toggle{width:44px;height:44px;padding:0;justify-content:center;border-radius:50%;top:auto;bottom:calc(var(--clue-sheet,22dvh) + 80px)}.sim-toggle span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.sim-toggle.is-running:not([aria-expanded="true"])::after{position:absolute;top:2px;right:2px}}
+/* Collapsible step card: the toggle folds the card down to its heading line. */
+.route-step-heading{position:relative}
+.route-step-toggle{margin-left:auto;flex:none;width:34px;height:34px;border:1px solid #cab58d;border-radius:50%;background:#fbf5e5;cursor:pointer;display:grid;place-items:center;padding:0}
+.route-step-toggle::before{content:"";width:8px;height:8px;border-right:2px solid #243d33;border-bottom:2px solid #243d33;transform:translateY(2px) rotate(-135deg);transition:transform .2s}
+.route-origin-row.is-collapsed .route-step-toggle::before{transform:translateY(-2px) rotate(45deg)}
+.route-origin-row.is-collapsed>:not(.route-step-heading){display:none!important}
+/* Facility icons on buildings (toilets + functional rooms). */
+.fac-badges{cursor:pointer}
+.fac-badge circle{stroke:#fffaec;stroke-width:2.2}
+.fac-legend{position:absolute;left:10px;bottom:10px;z-index:3;display:flex;flex-wrap:wrap;gap:3px 10px;max-width:calc(100% - 80px);padding:6px 10px;background:#fffaecee;border:1px solid #d8ceba;border-radius:6px;font:600 12px system-ui,'Microsoft YaHei',sans-serif;color:#283e35;pointer-events:none}
+.fac-legend:empty{display:none}
+.fac-legend span{display:inline-flex;align-items:center;gap:4px}
+.fac-legend svg{width:15px;height:15px}
+.fac-legend em{flex-basis:100%;font-style:normal;font-size:11px;color:#a43c2f}
+@media (min-width:801px){.fac-legend{top:10px;left:44px;bottom:auto}}
