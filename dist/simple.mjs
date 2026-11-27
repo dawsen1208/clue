@@ -1,11 +1,11 @@
 // Clue · Simple — a plain comparison variant of the main prototype.
 // Same directory, same campus map, same walking network; no extra features.
-import {places} from './data.mjs?v=room-148';
+import {places} from './data.mjs?v=pins-1';
 import {findPlaces,floorName,distance} from './core.mjs';
 import {withSampleDestinations,scenarioOrigin,walkMinutes} from './concept.mjs?v=start-first';
 import {originPoints,walkingRoute} from './campus-routing.mjs?v=start-first';
 import {floorPlan,escapeText as e} from './map-first.mjs?v=locate-map';
-import {buildings} from './data.mjs?v=room-148';
+import {buildings} from './data.mjs?v=pins-1';
 import {sampleFacilities,facilityTypes,facilityGlyph,facilityOrder,facilitiesIn} from './facilities.mjs?v=fac-2';
 
 const directory=[...withSampleDestinations(places,originPoints),...sampleFacilities()];

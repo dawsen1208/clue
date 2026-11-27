@@ -14,9 +14,9 @@ export const buildings=[
  {id:'R32',name:'Teaching and Learning Building',zh:'教学与学习大楼',x:1308,y:577,lat:52.4521,lon:-1.9320},
  {id:'R16',name:'Arts Building',zh:'文科楼',x:1398,y:685,lat:52.4504,lon:-1.9290},
  {id:'R18',name:'Strathcona Building',zh:'Strathcona 楼',x:1435,y:637,lat:52.4513,lon:-1.9283},
- {id:'R13',name:'Poynting Building',zh:'Poynting 楼',x:1428,y:865,lat:52.4491,lon:-1.9291},
+ {id:'R13',name:'Poynting Building',zh:'Poynting 楼',x:1428,y:794,lat:52.4494,lon:-1.9291},
  {id:'Y9',name:'Computer Science',zh:'计算机科学楼',x:1044,y:761,lat:52.4495,lon:-1.9360},
- {id:'Y3',name:'Winifred Hackett Building',zh:'Winifred Hackett 楼',x:1059,y:863,lat:52.4481,lon:-1.9358},
+ {id:'Y3',name:'Winifred Hackett Building',zh:'Winifred Hackett 楼',x:1134,y:867,lat:52.4484,lon:-1.9337},
  {id:'R25',name:'Munrow Lecture Theatre',zh:'Munrow 阶梯教室',x:1258,y:501,lat:52.4530,lon:-1.9325},
  {id:'R6',name:'Aston Webb – Great Hall',zh:'Aston Webb · Great Hall',x:1316,y:879,lat:52.4482,lon:-1.9305},
  {id:'O1',name:'Guild of Students',zh:'学生会大楼',x:1516,y:853,lat:52.4482,lon:-1.9255}
